@@ -1,0 +1,134 @@
+:root {
+  --body-bg: linear-gradient(135deg, rgb(246, 189, 84) 10%, #dbd9d9 100%);
+  --msger-bg: #fff;
+  --border: 2px solid #ddd;
+  --left-msg-bg: #f1f0f0;
+  --right-msg-bg: orange;
+  --right-msg-color: #fff;
+  --input-bg: #f3f3f3;
+}
+
+body {
+  font-family: 'Tahoma', sans-serif;
+  background: var(--body-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  margin: 0;
+  padding: 12px;
+
+}
+
+.msger {
+  width: 100%;
+  max-width: 600px;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--msger-bg);
+  border: var(--border);
+  border-radius: 10px;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  background-image: url('/media/images/chat_back.jpg');
+}
+
+.msger-header {
+  padding: 10px;
+  background: #120909;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: var(--border);
+
+}
+
+.msger-chat {
+  flex: 1;
+  padding: 10px;
+  overflow-y: auto;
+  background: #fafafa;
+  background-image: url('/media/images/chat_back.jpg');
+
+}
+
+.msger-inputarea {
+  display: flex;
+  padding: 10px;
+  background: #0a0808;
+  align-items: center;
+  gap: 10px;
+}
+
+.msger-input {
+  flex: 1;
+  height: 40px;
+  border: 2px solid orange;
+  border-radius: 10px;
+  padding: 0 15px;
+  background: var(--input-bg);
+
+}
+
+.msger-send-btn {
+  width: 50px;
+  height: 50px;
+  background: #ffa500;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.msger-send-btn:hover {
+  background: #ff8c00;
+}
+
+.msg {
+  display: flex;
+  margin-bottom: 15px;
+  align-items: flex-end;
+}
+
+.msg-img {
+  width: 40px;
+  height: 40px;
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+  margin: 0 10px;
+}
+
+.msg-bubble {
+  max-width: 70%;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.right-msg {
+  flex-direction: row-reverse;
+}
+
+.right-msg .msg-bubble {
+  background: var(--right-msg-bg);
+  color: var(--right-msg-color);
+}
+
+.left-msg .msg-bubble {
+  background: var(--left-msg-bg);
+  color: #333;
+}
+
+.msg-info-time {
+  font-size: 0.75rem;
+  color: #aaa;
+  margin-top: 5px;
+  text-align: left;
+}

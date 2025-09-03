@@ -1,0 +1,146 @@
+
+html {
+  scroll-behavior: smooth;
+
+}
+
+
+  .fixed.inset-0.flex.items-center.justify-center.z-50 {
+    display: flex !important;
+  }
+
+  .relative.bg-white.rounded-lg.shadow-lg.w-full.max-w-md.mx-auto {
+    display: block !important;
+
+  }
+
+  #div_my {
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .div_my.hidden {
+    opacity: 0;
+    transform: translateY(-50px);
+  }
+
+
+  .cart-link {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: #ff6f61; /* رنگ پس‌زمینه دلخواه */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 50px; /* گوشه‌های گرد */
+    transition: all 0.3s ease; /* افکت تغییرات */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* سایه زیبا */
+    margin-top: 20px;
+}
+
+.cart-link:hover {
+    background-color: #e64a45; /* رنگ پس‌زمینه هنگام هاور */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* سایه بیشتر هنگام هاور */
+    transform: translateY(-2px); /* افکت پرش کوچک */
+}
+
+.cart-link:active {
+    transform: translateY(0); /* هنگام کلیک */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* سایه به حالت اول بازمی‌گردد */
+}
+
+
+
+
+svg.heart-full {
+  fill: red; /* رنگ قرمز برای قلب پر */
+  transition: fill 0.3s ease; /* انیمیشن تغییر رنگ */
+}
+
+svg.heart-empty {
+  fill: currentColor; /* رنگ پیش فرض برای قلب خالی */
+  transition: fill 0.3s ease; /* انیمیشن تغییر رنگ */
+}
+
+
+@keyframes pulse {
+  0% {
+      transform: scale(1);
+  }
+  50% {
+      transform: scale(1.2);
+  }
+  100% {
+      transform: scale(1);
+  }
+}
+
+svg.animate {
+  animation: pulse 0.3s ease; /* انیمیشن بزرگ و کوچک شدن */
+}
+
+
+
+
+/* استایل برای پاسخ‌ها */
+.reply-comment {
+    padding: 15px;
+    margin-left: 20px;  /* فاصله از سمت چپ برای ایجاد تو رفتگی */
+    background-color: #f9f9f9;  /* پس‌زمینه‌ی روشن‌تر برای تمایز */
+    border-left: 3px solid #ccc;  /* یک خط عمودی در سمت چپ برای تمایز بیشتر */
+    border-radius: 5px;  /* گوشه‌های گرد */
+    font-size: 0.95rem;  /* اندازه فونت کمی کوچک‌تر */
+    color: #555;  /* رنگ متن خاکستری برای پاسخ‌ها */
+}
+
+/* استایل برای کامنت‌های اصلی */
+.comment-main {
+    padding: 15px;
+    background-color: #fff;
+
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* تنظیم حاشیه و فاصله برای تمام عناصر */
+.comments li {
+    list-style-type: none;
+}
+
+.bg-warning{
+
+  background-color: hsl(var(--primary-btn)) !important;
+
+}
+
+
+
+.input-with-icon {
+  background-image: url('{{media_url}}images/logo.png'); /* مسیر آیکون */
+  background-repeat: no-repeat;
+  background-position: left 8px center; /* تنظیم مکان آیکون */
+  background-size: 60px; /* اندازه آیکون */
+  padding-left: 36px; /* فاصله برای جای‌گیری آیکون */
+}
+
+
+
+.progress-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 8px;
+  background-color: #f3f3f3;
+  z-index: 9999;
+}
+
+.progress-bar {
+  height: 8px;
+  background: linear-gradient(90deg, #ff8c00, #ff3b3b);
+  width: 0%;
+  transition: width 0.2s ease;
+}
+.bg-emerald-600\/50 {
+  background-color: orange;
+}

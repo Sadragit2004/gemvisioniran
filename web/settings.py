@@ -37,10 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'ckeditor',
+    'ckeditor_uploader',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'apps.main.apps.MainConfig',
-    'apps.user.apps.UserConfig'
+    'apps.user.apps.UserConfig',
+    'apps.file.apps.FileConfig'
 ]
 
 MIDDLEWARE = [
@@ -142,3 +145,51 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR,'static/'),)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR,'media/')
 AUTH_USER_MODEL = 'user.CustomUser'
+
+
+
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': '100%',
+        # بقیه تنظیمات به دلخواه
+    }
+}
+
+
+
+
+
+CKEDITOR_UPLOAD_PATH = 'images/cheditor/upload_files/'
+CKEDITOR_STORAGE_BACKEND = 'django.core.files.storage.FileSystemStorage'
+CKEDITOR_CONFIGS = {
+    'default':{
+        'toolbar':'Custom',
+        'toolbar_Custom':[
+            ['Bold','Link','Unlink','Image'],
+        ],
+    },
+
+    'special':{
+        'toolbar':'Special','height':500,
+        'toolbar':'full',
+        'toolbar_Special':
+            [
+                ['Bold','Link','Unlink','Image'],
+                ['CodeSnippet'],
+
+            ],'extraPlugins':','.join(['codesnippet','clipboard',])
+    },
+    'special_an':
+        {
+
+            'toolbar':'Special','height':500,
+            'toolbar_Special':
+                [
+                    ['Bold'],
+                    ['CodeSnippet']
+
+                ],'extraPlugins':','.join(['codesnippet',])
+         }
+}
