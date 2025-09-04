@@ -58,6 +58,9 @@ class File(Base):
     )
     price = models.PositiveIntegerField(default=0, verbose_name="قیمت")
     features = models.ManyToManyField(Feature, through="FileFeature", verbose_name="ویژگی‌ها")
+    group = models.ManyToManyField(Group,verbose_name='دسته بندی کالا',related_name='files_of_groups')
+    fileupload = utils.FileUpload('images', 'FileOrg')
+    image = models.ImageField(upload_to=fileupload.upload_to, verbose_name="تصویر",blank=True,null=True)
 
     class Meta:
         verbose_name = "فایل"

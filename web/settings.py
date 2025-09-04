@@ -37,13 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'django_render_partial',
     'ckeditor',
     'ckeditor_uploader',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'apps.main.apps.MainConfig',
     'apps.user.apps.UserConfig',
-    'apps.file.apps.FileConfig'
+    'apps.file.apps.FileConfig',
 ]
 
 MIDDLEWARE = [
@@ -69,6 +70,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'apps.main.views.media_admin',
             ],
         },
     },
