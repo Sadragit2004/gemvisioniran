@@ -2,9 +2,8 @@ from django.contrib import admin
 from django.utils.html import format_html
 from django.utils.text import slugify
 from django.db.models import Count, Prefetch, Q
-
-from .models import File, Group, Feature, FeatureValue, FileFeature, FilesGallery
-
+import jdatetime
+from .models import File, Group, Feature, FeatureValue, FileFeature, FilesGallery, Comment, Like_or_unLike
 
 # ========================
 # فیلترهای سفارشی
@@ -290,3 +289,166 @@ class FileFeatureAdmin(admin.ModelAdmin):
     autocomplete_fields = ("file", "feature", "filterValue")
     list_filter = ("feature",)
 
+
+# ========================
+# فیلترهای سفارشی برای کامنت
+# ========================
+class CommentIsActiveFilter(admin.SimpleListFilter):
+    title = "وضعیت فعال بودن"
+    parameter_name = "is_active"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("active", "فعال"),
+            ("inactive", "غیرفعال"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "active":
+            return queryset.filter(is_active=True)
+        if self.value() == "inactive":
+            return queryset.filter(is_active=False)
+        return queryset
+
+
+class HasParentCommentFilter(admin.SimpleListFilter):
+    title = "دارای کامنت والد"
+    parameter_name = "has_parent"
+
+    def lookups(self, request, model_admin):
+        return (
+            ("yes", "بله"),
+            ("no", "خیر"),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == "yes":
+            return queryset.filter(comment_parent__isnull=False)
+        if self.value() == "no":
+            return queryset.filter(comment_parent__isnull=True)
+        return queryset
+
+
+# ========================
+# ادمین Comment
+# ========================
+@admin.register(Comment)
+class CommentAdmin(admin.ModelAdmin):
+    list_display = (
+        "user", "file", "text_short", "comment_parent_short",
+        "get_jalali_register_date", "is_active", "likes_count", "unlikes_count"
+    )
+    list_display_links = ("user", "file")
+    list_editable = ("is_active",)
+    list_filter = (
+        CommentIsActiveFilter,
+        HasParentCommentFilter,
+        ("register_date", admin.DateFieldListFilter),
+    )
+    search_fields = ("user__name", "user__family", "file__title", "text")
+    readonly_fields = ("register_date", "get_jalali_register_date")
+    autocomplete_fields = ("user", "file", "comment_parent", "user_approving")
+    ordering = ("-register_date",)
+    list_per_page = 25
+
+    fieldsets = (
+        ("اطلاعات اصلی", {
+            "fields": ("user", "file", "text", "is_active",'is_suggest')
+        }),
+        ("کامنت والد و تایید کننده", {
+            "fields": ("comment_parent", "user_approving"),
+            "classes": ("collapse",)
+        }),
+        ("تاریخ ثبت", {
+            "fields": ("register_date", "get_jalali_register_date"),
+            "classes": ("collapse",)
+        }),
+    )
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        # شمارنده‌های لایک و آنلایک
+        qs = qs.annotate(
+            _likes_count=Count('comment_request', filter=Q(comment_request__like=True)),
+            _unlikes_count=Count('comment_request', filter=Q(comment_request__unlike=True))
+        ).select_related('user', 'file', 'comment_parent', 'user_approving')
+        return qs
+
+    def text_short(self, obj):
+        if len(obj.text) > 50:
+            return f"{obj.text[:50]}..."
+        return obj.text
+    text_short.short_description = "متن کامنت"
+
+    def comment_parent_short(self, obj):
+        if obj.comment_parent:
+            return f"کامنت #{obj.comment_parent.id}"
+        return "—"
+    comment_parent_short.short_description = "کامنت والد"
+
+    def likes_count(self, obj):
+        return getattr(obj, "_likes_count", 0)
+    likes_count.short_description = "تعداد لایک"
+    likes_count.admin_order_field = "_likes_count"
+
+    def unlikes_count(self, obj):
+        return getattr(obj, "_unlikes_count", 0)
+    unlikes_count.short_description = "تعداد آنلایک"
+    unlikes_count.admin_order_field = "_unlikes_count"
+
+    # اکشن‌ها
+    actions = ["activate_comments", "deactivate_comments"]
+
+    def activate_comments(self, request, queryset):
+        updated = queryset.update(is_active=True)
+        self.message_user(request, f"{updated} کامنت فعال شد.")
+    activate_comments.short_description = "فعال‌سازی کامنت‌های انتخاب‌شده"
+
+    def deactivate_comments(self, request, queryset):
+        updated = queryset.update(is_active=False)
+        self.message_user(request, f"{updated} کامنت غیرفعال شد.")
+    deactivate_comments.short_description = "غیرفعال‌سازی کامنت‌های انتخاب‌شده"
+
+
+# ========================
+# ادمین Like_or_unLike
+# ========================
+@admin.register(Like_or_unLike)
+class LikeOrUnlikeAdmin(admin.ModelAdmin):
+    list_display = ("user", "comment_short", "files", "like", "unlike", "register_data_jalali")
+    list_filter = (
+        "like", "unlike",
+        ("register_data", admin.DateFieldListFilter),
+    )
+    search_fields = ("user__name", "user__family", "comment__text", "files__title")
+    readonly_fields = ("register_data",)
+    autocomplete_fields = ("user", "comment", "files")
+    ordering = ("-register_data",)
+    list_per_page = 25
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.select_related('user', 'comment', 'files')
+
+    def comment_short(self, obj):
+        if obj.comment and len(obj.comment.text) > 30:
+            return f"{obj.comment.text[:30]}..."
+        return obj.comment.text if obj.comment else "—"
+    comment_short.short_description = "کامنت"
+
+    def register_data_jalali(self, obj):
+        return jdatetime.datetime.fromgregorian(datetime=obj.register_data).strftime('%Y/%m/%d')
+    register_data_jalali.short_description = 'تاریخ ثبت'
+
+    # جلوگیری از انتخاب همزمان لایک و آنلایک
+    def save_model(self, request, obj, form, change):
+        if obj.like and obj.unlike:
+            # اگر هر دو انتخاب شده‌اند، آنلایک را غیرفعال کن
+            obj.unlike = False
+        super().save_model(request, obj, form, change)
+
+
+# بقیه کدهای ادمین موجود (FileAdmin, GroupAdmin, etc.) بدون تغییر می‌مانند
+# ========================
+# فیلترهای سفارشی
+# ========================

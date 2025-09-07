@@ -2,7 +2,8 @@ from django.db import models
 from django.utils import timezone
 from ckeditor_uploader.fields import RichTextUploadingField
 import utils
-
+from apps.user.models import CustomUser
+import jdatetime
 
 # ========================
 # Base Model
@@ -32,6 +33,8 @@ class Group(Base):
     description = RichTextUploadingField(
         verbose_name="توضیحات", config_name="special", blank=True, null=True
     )
+    fileupload = utils.FileUpload('images', 'groupFile')
+    image = models.ImageField(upload_to=fileupload.upload_to, verbose_name="تصویر",blank=True,null=True)
 
     class Meta:
         verbose_name = "گروه محصول"
@@ -42,7 +45,9 @@ class Group(Base):
 # ویژگی
 # ========================
 class Feature(Base):
+
     group = models.ManyToManyField(Group, verbose_name="گروه", related_name="features")
+
 
     class Meta:
         verbose_name = "ویژگی"
@@ -61,6 +66,7 @@ class File(Base):
     group = models.ManyToManyField(Group,verbose_name='دسته بندی کالا',related_name='files_of_groups')
     fileupload = utils.FileUpload('images', 'FileOrg')
     image = models.ImageField(upload_to=fileupload.upload_to, verbose_name="تصویر",blank=True,null=True)
+    downloadLink = models.URLField(blank=True, null=True, verbose_name="لینک دانلود خارجی")
 
     class Meta:
         verbose_name = "فایل"
@@ -124,3 +130,59 @@ class FilesGallery(models.Model):
 
     def __str__(self):
         return f"تصویر {self.files.title}"
+
+
+
+
+# comment in file detail
+class Comment(models.Model):
+
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='user_comment')
+    file = models.ForeignKey(File,on_delete=models.CASCADE,related_name='comment_product')
+    user_approving = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='apporiv_comment',blank=True,null=True)
+    text = models.TextField()
+    is_suggest = models.BooleanField(default=False,verbose_name='پیشنهاد وضعیت')
+    comment_parent = models.ForeignKey('Comment',on_delete=models.CASCADE,related_name='parent_comment',verbose_name='کامنت',blank=True,null=True)
+    register_date = models.DateTimeField(auto_now_add=True,verbose_name='زمان ثبت')
+    is_active  = models.BooleanField(default=False)
+
+
+
+    def get_jalali_register_date(self):
+        return jdatetime.datetime.fromgregorian(datetime=self.register_date).strftime('%Y/%m/%d')
+
+    get_jalali_register_date.short_description = 'تاریخ ثبت'
+
+
+
+    def __str__(self) -> str:
+        return self.user.name
+
+
+
+    class Meta:
+        verbose_name = 'نظر'
+        verbose_name_plural = 'نظرات'
+
+
+# like o unlick next to the comment
+class Like_or_unLike(models.Model):
+    user = models.ForeignKey(CustomUser,on_delete=models.CASCADE,related_name='user_request',verbose_name='پیشنهادات کاربر')
+    comment = models.ForeignKey(Comment,on_delete=models.CASCADE,verbose_name='نظر',related_name='comment_request')
+    files = models.ForeignKey(File,on_delete=models.CASCADE,related_name='product_request')
+    register_data = models.DateTimeField(verbose_name='تاریخ ثبت',default=timezone.now)
+    like = models.BooleanField(default=False)
+    unlike = models.BooleanField(default=False)
+
+
+
+    def __str__(self):
+        return self.user.name+' '+self.user.family
+
+
+
+
+    class Meta:
+        verbose_name = 'لایک'
+        verbose_name_plural = 'لایک ها'
+
