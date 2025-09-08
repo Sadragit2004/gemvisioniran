@@ -8,10 +8,25 @@ def add_to_cart(request, file_id):
     cart = ShopCart(request)
     file = get_object_or_404(File, id=file_id)
     cart.add(file)
+
+    # دریافت اطلاعات به‌روز شده سبد خرید
+    cart_items = cart.get_cart()
+    cart_total = cart.get_total_price()
+
     return JsonResponse({
         "success": True,
-        "count": len(cart),  # تعداد کل فایل‌ها
-        "total_price": cart.get_total_price(),  # مجموع قیمت‌ها (برای آینده)
+        "count": len(cart),
+        "total_price": cart_total,
+        "cart_items": [
+            {
+                "file_id": item["file"].id,
+                "title": item["title"],
+                "price": str(item["price"]),
+                "image": item["image"],
+                "url": item["file"].get_absolute_url()
+            }
+            for item in cart_items
+        ]
     })
 
 

@@ -4,7 +4,7 @@ from ckeditor_uploader.fields import RichTextUploadingField
 import utils
 from apps.user.models import CustomUser
 import jdatetime
-
+from django.urls import reverse
 # ========================
 # Base Model
 # ========================
@@ -71,6 +71,10 @@ class File(Base):
     class Meta:
         verbose_name = "فایل"
         verbose_name_plural = "فایل‌ها"
+
+
+    def get_absolute_url(self):
+        return reverse("file:file_detail", kwargs={"slug": self.slug })
 
 
 # ========================
