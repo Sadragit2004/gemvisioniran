@@ -41,12 +41,13 @@ INSTALLED_APPS = [
     'django_render_partial',
     'ckeditor',
     'ckeditor_uploader',
-    
+
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'apps.main.apps.MainConfig',
     'apps.user.apps.UserConfig',
     'apps.file.apps.FileConfig',
+    'apps.order.apps.OrderConfig',
 ]
 
 MIDDLEWARE = [

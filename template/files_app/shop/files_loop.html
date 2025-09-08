@@ -48,13 +48,13 @@
           {% endif %}
         </div>
 
-        <a onclick='add_to_shop_cart({{file.id}},1)'>
-          <span class="cursor-pointer">
-            <svg class="h-6 w-6">
-              <use xlink:href="#cart" />
-            </svg>
-          </span>
-        </a>
+      <a onclick="addToCart({{ file.id }})" aria-label="اضافه کردن {{file.title}} به سبد خرید">
+                  <span class="cursor-pointer">
+                    <svg class="h-6 w-6">
+                      <use xlink:href="#cart" />
+                    </svg>
+                  </span>
+                  </a>
         <div
           class="text-sm font-bold text-primary md:text-base"
         >

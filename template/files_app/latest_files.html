@@ -52,12 +52,12 @@
                   <div>
 
                   </div>
-                  <a onclick="add_to_shop_cart(19, 1)" aria-label="اضافه کردن کتاب آدم خواران اثر ژان تولی نشر آذرگون به سبد خرید">
-                    <span class="cursor-pointer">
-                      <svg class="h-6 w-6">
-                        <use xlink:href="#cart" />
-                      </svg>
-                    </span>
+                  <a onclick="addToCart({{ file.id }})" aria-label="اضافه کردن {{file.title}} به سبد خرید">
+                  <span class="cursor-pointer">
+                    <svg class="h-6 w-6">
+                      <use xlink:href="#cart" />
+                    </svg>
+                  </span>
                   </a>
                   <!-- New price -->
                   <div class="text-sm font-bold text-primary md:text-base">

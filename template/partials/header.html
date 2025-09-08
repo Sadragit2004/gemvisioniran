@@ -1,6 +1,6 @@
 
 
-
+{% load render_partial %}
 <style>
 
 .input-with-icon {
@@ -201,7 +201,7 @@
                     0
                   </span>
                 </button>
-                {% comment %} {% render_partial 'order:show_shop_cart' %} {% endcomment %}
+                {% render_partial 'order:get_card' %}
               </div>
 
               <!-- تغییر تم -->

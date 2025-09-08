@@ -1,0 +1,99 @@
+{% load humanize %}
+<div
+  class="z-10 !ml-5 hidden w-[400px] overflow-hidden rounded-lg border-t-2 border-t-primary bg-muted"
+  id="dropdownBasketDesktop"
+>
+  <!-- Head -->
+  <div class="flex items-center justify-between p-5 pb-2">
+    <div class="text-sm text-text/90">{{ cart_count }} مورد</div>
+    <a
+      class="flex items-center gap-x-1 text-sm text-primary"
+      href=""
+    >
+      <div>مشاهده سبد خرید</div>
+      <div>
+        <svg class="h-5 w-5">
+          <use xlink:href="#chevron-left" />
+        </svg>
+      </div>
+    </a>
+  </div>
+
+  <!-- Items -->
+  <div class="h-60">
+    <ul id="cart-items-list" class="main-scroll h-full space-y-2 divide-y overflow-y-auto p-5 pl-2">
+      {% if cart_items %}
+        {% for item in cart_items %}
+          <li class="item_" data-file-id="{{ item.file.id }}">
+            <div class="flex gap-x-2 py-5">
+              <!-- Product Image -->
+              <div class="relative min-w-fit">
+                <a href="{{ item.file.get_absolute_url }}">
+                  <img
+                    alt="{{ item.title }}"
+                    class="h-[120px] w-[120px] object-cover rounded-md"
+                    loading="lazy"
+                    src="{{ item.image }}"
+                  />
+                </a>
+                <button
+                  class="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-background"
+                  type="button"
+                  onclick="removeFromCart('{{ item.file.id }}')"
+                >
+                  <svg class="h-6 w-6 text-red-600 dark:text-red-500">
+                    <use xlink:href="#close" />
+                  </svg>
+                </button>
+              </div>
+
+              <div class="w-full space-y-1.5">
+                <!-- File Title -->
+                <a
+                  class="line-clamp-2 h-12"
+                  href="{{ item.file.get_absolute_url }}"
+                >
+                  {{ item.title }}
+                </a>
+
+                <!-- Price -->
+                <div class="flex items-center justify-between gap-x-2">
+                  <div class="text-primary">
+                    <span class="text-lg font-bold">{{ item.price|intcomma }}</span>
+                    <span class="text-sm">تومان</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </li>
+        {% endfor %}
+      {% else %}
+        <li class="text-center py-10 text-lg text-gray-500">
+          سبد خرید شما خالی است
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+
+  <!-- Footer -->
+  <div class="flex items-center justify-between border-t p-5">
+    <div class="flex flex-col items-center gap-y-1">
+      <div class="text-sm text-text/60">
+        مبلغ قابل پرداخت
+      </div>
+      <div class="text-text/90">
+        <span class="font-bold">{{ cart_total|intcomma }}</span>
+        <span class="text-sm">تومان</span>
+      </div>
+    </div>
+
+    <a href="">
+      <button
+        class="btn-primary w-32 py-3 text-sm"
+        type="button"
+      >
+        ثبت سفارش
+      </button>
+    </a>
+  </div>
+</div>
