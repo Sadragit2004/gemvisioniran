@@ -201,7 +201,8 @@
                     0
                   </span>
                 </button>
-                {% render_partial 'order:get_card' %}
+                {% comment %} {% render_partial 'order:get_card' %} {% endcomment %}
+                {% include "order_app/cart/show_shop_cart.html" %}
               </div>
 
               <!-- تغییر تم -->

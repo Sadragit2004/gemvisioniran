@@ -22,56 +22,86 @@
   <!-- Items -->
   <div class="h-60">
     <ul id="cart-items-list" class="main-scroll h-full space-y-2 divide-y overflow-y-auto p-5 pl-2">
-      {% if cart_items %}
-        {% for item in cart_items %}
-          <li class="item_" data-file-id="{{ item.file.id }}">
-            <div class="flex gap-x-2 py-5">
-              <!-- Product Image -->
-              <div class="relative min-w-fit">
-                <a href="{{ item.file.get_absolute_url }}">
-                  <img
-                    alt="{{ item.title }}"
-                    class="h-[120px] w-[120px] object-cover rounded-md"
-                    loading="lazy"
-                    src="{{ item.image }}"
-                  />
-                </a>
-                <button
-                  class="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-background"
-                  type="button"
-                  onclick="removeFromCart('{{ item.file.id }}')"
-                >
-                  <svg class="h-6 w-6 text-red-600 dark:text-red-500">
-                    <use xlink:href="#close" />
-                  </svg>
-                </button>
-              </div>
+    <script>
+async function loadCartItems() {
+  try {
+    const response = await fetch("/order/get_cart/");
+    const data = await response.json();
 
-              <div class="w-full space-y-1.5">
-                <!-- File Title -->
-                <a
-                  class="line-clamp-2 h-12"
-                  href="{{ item.file.get_absolute_url }}"
-                >
-                  {{ item.title }}
-                </a>
+    const cartItemsList = document.getElementById("cart-items-list");
+    cartItemsList.innerHTML = "";
 
-                <!-- Price -->
-                <div class="flex items-center justify-between gap-x-2">
-                  <div class="text-primary">
-                    <span class="text-lg font-bold">{{ item.price|intcomma }}</span>
-                    <span class="text-sm">تومان</span>
-                  </div>
+    if (data.cart_items.length === 0) {
+      cartItemsList.innerHTML = `
+        <li class="text-center py-10 text-lg text-gray-500">
+          سبد خرید شما خالی است
+        </li>`;
+    } else {
+      data.cart_items.forEach(item => {
+        const li = document.createElement("li");
+        li.className = "item_";
+        li.setAttribute("data-file-id", item.file_id);
+
+        li.innerHTML = `
+          <div class="flex gap-x-2 py-5">
+            <!-- Product Image -->
+            <div class="relative min-w-fit">
+              <a href="${item.url}">
+                <img
+                  alt="${item.title}"
+                  class="h-[120px] w-[120px] object-cover rounded-md"
+                  loading="lazy"
+                  src="${item.image}"
+                />
+              </a>
+              <button
+                class="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-background"
+                type="button"
+                onclick="removeFromCart('${item.file_id}')"
+              >
+                <svg class="h-6 w-6 text-red-600 dark:text-red-500">
+                  <use xlink:href="#close" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="w-full space-y-1.5">
+              <!-- File Title -->
+              <a
+                class="line-clamp-2 h-12"
+                href="${item.url}"
+              >
+                ${item.title}
+              </a>
+
+              <!-- Price -->
+              <div class="flex items-center justify-between gap-x-2">
+                <div class="text-primary">
+                  <span class="text-lg font-bold">${Number(item.price).toLocaleString()}</span>
+                  <span class="text-sm">تومان</span>
                 </div>
               </div>
             </div>
-          </li>
-        {% endfor %}
-      {% else %}
-        <li class="text-center py-10 text-lg text-gray-500">
-          سبد خرید شما خالی است
-        </li>
-      {% endif %}
+          </div>
+        `;
+
+        cartItemsList.appendChild(li);
+      });
+    }
+
+    // آپدیت بخش تعداد و مجموع
+    document.querySelector(".text-sm.text-text\\/90").textContent = `${data.cart_count} مورد`;
+    document.querySelector(".text-text\\/90 .font-bold").textContent = Number(data.cart_total).toLocaleString();
+
+  } catch (error) {
+    console.error("خطا در گرفتن سبد خرید:", error);
+  }
+}
+
+// اولین بار وقتی صفحه لود میشه
+document.addEventListener("DOMContentLoaded", loadCartItems);
+</script>
+
     </ul>
   </div>
 

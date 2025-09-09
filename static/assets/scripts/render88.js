@@ -1,4 +1,3 @@
-
 async function updateCartCount() {
   try {
     const response = await fetch("/order/count/", {
@@ -9,6 +8,7 @@ async function updateCartCount() {
     });
     const data = await response.json();
     document.getElementById("count_product").innerText = data.count;
+    document.getElementById("count_product2").innerText = data.count;
   } catch (error) {
     console.error("خطا در گرفتن تعداد سبد خرید:", error);
   }
@@ -16,7 +16,6 @@ async function updateCartCount() {
 
 // وقتی صفحه لود شد
 document.addEventListener("DOMContentLoaded", updateCartCount);
-
 
 async function addToCart(fileId) {
   try {
@@ -31,6 +30,7 @@ async function addToCart(fileId) {
     if (data.success) {
       // آپدیت کردن تعداد آیتم‌های سبد خرید
       document.getElementById("count_product").innerText = data.count;
+      document.getElementById("count_product2").innerText = data.count;
 
       // آپدیت لیست سبد خرید
       updateCartItems(data.cart_items, data.total_price);
@@ -38,6 +38,53 @@ async function addToCart(fileId) {
   } catch (error) {
     console.error("خطا در افزودن به سبد خرید:", error);
   }
+}
+
+// تابع برای حذف از سبد خرید
+async function removeFromCart(fileId) {
+  try {
+    const response = await fetch(`/order/remove/${fileId}/`, {
+      method: "POST",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "X-CSRFToken": getCsrfToken(),
+        "Content-Type": "application/json",
+      }
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      // آپدیت کردن تعداد آیتم‌های سبد خرید
+      document.getElementById("count_product").innerText = data.count;
+
+      // آپدیت لیست سبد خرید
+      updateCartItems(data.cart_items, data.total_price);
+
+      // انیمیشن حذف آیتم
+      const itemElement = document.querySelector(`.item_[data-file-id="${fileId}"]`);
+      if (itemElement) {
+        itemElement.style.transition = "all 0.3s ease";
+        itemElement.style.opacity = "0";
+        itemElement.style.height = "0";
+        itemElement.style.overflow = "hidden";
+
+        setTimeout(() => {
+          itemElement.remove();
+        }, 300);
+      }
+    }
+  } catch (error) {
+    console.error("خطا در حذف از سبد خرید:", error);
+  }
+}
+
+// تابع برای دریافت CSRF token
+function getCsrfToken() {
+  const cookieValue = document.cookie
+    .split('; ')
+    .find(row => row.startsWith('csrftoken='))
+    ?.split('=')[1];
+  return cookieValue || '';
 }
 
 function updateCartItems(items, totalPrice) {
@@ -51,6 +98,18 @@ function updateCartItems(items, totalPrice) {
         سبد خرید شما خالی است
       </li>
     `;
+
+    // آپدیت مبلغ کل به صفر
+    if (cartTotalElement) {
+      cartTotalElement.innerText = "0";
+    }
+
+    // آپدیت تعداد آیتم‌ها در بخش پایینی
+    const itemCountElement = document.querySelector("#dropdownBasketDesktop .text-text\\/90");
+    if (itemCountElement) {
+      itemCountElement.innerText = "0 مورد";
+    }
+
     return;
   }
 
