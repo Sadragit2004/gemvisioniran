@@ -1,192 +1,69 @@
-
-{% load humanize %}
-
-{% load render_partial %}
-<div
-aria-labelledby="user-basket-drawer-navigation-label"
-class="fixed left-0 top-0 z-40 h-full w-80 -translate-x-full bg-muted transition-transform duration-300"
-id="user-basket-drawer-navigation"
-tabindex="-1"
->
-<div
-  class="flex items-center justify-between gap-x-4 border-b p-4 pb-5"
->
-  <button
-    aria-controls="user-account-drawer-navigation"
-    class="inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-text/90"
-    data-drawer-hide="user-basket-drawer-navigation"
-    type="button"
-
-  >
-    <svg class="h-5 w-5">
-      <use xlink:href="#close" />
-    </svg>
-
-    <span class="sr-only">Close menu</span>
-  </button>
-  <a href="{% url 'order:shop_cart' %}">
-  <div style='font-size: 15px;' class="text-lg text-text/90">
-   مشاهده سبد خرید
-  </div>
-</a>
-
-<a onclick='update_cart3()'>
-
-  <div style='font-size:14px;' class="text-lg text-text/90">
-     بروزرسانی سبد    <span class="text-sm">  <i style='color:green;' class="bi bi-arrow-clockwise"></i>
-     </span>
-  </div>
-</a>
-
-
-</div>
-<div class="h-full pb-[150px]">
-  <ul
-    class="main-scroll h-full space-y-2 divide-y overflow-y-auto p-4"
-  >
-<div id='mobile_list_cart'>
-
-{% load humanize %}
-
-
-
-    <!-- Mobile User Basket Drawer -->
 {% load humanize %}
 {% load render_partial %}
 
-
-
-        {% for item in shop_cart %}
-
-
-        <li>
-            <div class="flex gap-x-2 py-5">
-              <!-- Product Image -->
-
-              <div class="relative min-w-fit">
-                <a href="{{item.product.get_absolute_url}}">
-                  <img
-                    alt="{{item.product.product_name}} - image"
-                    class="h-20 w-20"
-                    loading="lazy"
-                    src="{{media_url}}{{item.product.image_name}}"
-                  />
-                </a>
-                <button
-                  class="absolute -right-2 -top-2 flex h-8 w-8 items-center justify-center rounded-full bg-background"
-                  type="button"
-                  onclick='delete_to_shop_cart_mobile({{item.product.id}})'
-                >
-                  <svg class="h-6 w-6 text-red-600 dark:text-red-500">
-                    <use xlink:href="#close" />
-                  </svg>
-                </button>
-              </div>
-
-              <div class="w-full space-y-1.5">
-                <!-- Product Title -->
-
-                <a
-                  class="line-clamp-2 h-10 text-sm"
-                  href="./product-detail.html"
-                >
-                  {{item.product.product_name}}
-                </a>
-                <!-- Product Attribute -->
-                <div class="flex items-center gap-x-2 text-xs text-text/60">
-                  <div>تعداد : {{item.qty}}</div>
-                  <div class="h-3 w-px rounded-full bg-background"></div>
-                  <div class="flex items-center gap-x-2">
-                    <span
-                      class="h-4 w-4 rounded-full"
-                      style="background: rgb(128, 128, 128)"
-                    ></span>
-                    <span> طوسی</span>
-                  </div>
-                </div>
-                <div class="flex items-center justify-between gap-x-2">
-                  <!-- Product Price -->
-                  <div class="text-primary">
-                    <span class="font-bold">{{item.final_price|intcomma}}</span>
-                    <span class="text-xs">تومان</span>
-                  </div>
-                  <!-- Product Quantity -->
-                  <div
-                    class="flex h-8 w-20 justify-between rounded-lg border px-2 py-1"
-                  >
-                    <button type="button" data-action="increment">
-                      <svg class="h-5 w-5 text-primary">
-                        <use xlink:href="#plus" />
-                      </svg>
-                    </button>
-                    <input
-                      id='qt3_{{item.product.id}}'
-                      value="{{item.qty}}"
-                      disabled
-                      type="number"
-                      class="flex h-5 w-5 select-none items-center justify-center bg-transparent text-center text-sm outline-none"
-                    />
-                    <button type="button" data-action="decrement">
-                      <svg class="h-5 w-5 text-red-600 dark:text-red-500">
-                        <use xlink:href="#minus" />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li>
-
-        {% endfor %}
-
-
-
-
-  <script>
-
-
-function delete_to_shop_cart_mobile(product_id){
-
-    $.ajax({
-        type:'GET',
-        url:'/orders/delete_to_cart_mobile/',
-        data:{
-            product_id:product_id,
-        },
-
-        success: function(res){
-            $('#mobile_list_cart').html (res);
-        }
-
-
-    });
-}
-  </script>
-</div>
-
-
-
-</ul>
-</div>
-<!-- Footer -->
-
 <div
-  class="sticky bottom-0 left-0 right-0 flex items-center justify-between border-t p-4 px-6 py-4"
+  aria-labelledby="user-basket-drawer-navigation-label"
+  class="fixed left-0 top-0 z-40 h-full w-80 -translate-x-full bg-muted transition-transform duration-300"
+  id="user-basket-drawer-navigation"
+  tabindex="-1"
 >
-  <div class="flex flex-col items-center gap-y-1">
-    <div class="text-sm text-text/60">مبلغ قابل پرداخت</div>
+  <div class="flex items-center justify-between gap-x-4 border-b p-4 pb-5">
+    <button
+      aria-controls="user-account-drawer-navigation"
+      class="inline-flex items-center rounded-lg bg-transparent p-1.5 text-sm text-text/90"
+      data-drawer-hide="user-basket-drawer-navigation"
+      type="button"
+    >
+      <svg class="h-5 w-5">
+        <use xlink:href="#close" />
+      </svg>
+      <span class="sr-only">Close menu</span>
+    </button>
+    <a href="">
+      <div style='font-size: 15px;' class="text-lg text-text/90">
+        مشاهده سبد خرید
+      </div>
+    </a>
+  </div>
 
-    <div class="text-text/90">
-      <span class="font-bold">{{finaly_price|intcomma}}</span>
-      <span class="text-sm">تومان</span>
+  <div class="h-full pb-[150px]">
+    <ul class="main-scroll h-full space-y-2 divide-y overflow-y-auto p-4">
+      <div id='mobile_list_cart'>
+        <!-- اینجا توسط JavaScript پر میشود -->
+      </div>
+    </ul>
+  </div>
+
+  <!-- Footer -->
+  <div class="sticky bottom-0 left-0 right-0 flex items-center justify-between border-t p-4 px-6 py-4">
+    <div class="flex flex-col items-center gap-y-1">
+      <div class="text-sm text-text/60">مبلغ قابل پرداخت</div>
+      <div class="text-text/90">
+        <span class="font-bold">0</span>
+        <span class="text-sm">تومان</span>
+      </div>
     </div>
+    <a class="btn-primary w-32 py-3 text-sm" href="">
+      مشاهده سبد خرید
+    </a>
   </div>
-  <a
-    class="btn-primary w-32 py-3 text-sm"
-    href=""
-  >
-    مشاهده سبد خرید
-  </a>
 </div>
-</div>
-</div>
+
+<script>
+  // وقتی دراور موبایل باز میشه
+document.addEventListener('DOMContentLoaded', function() {
+  const mobileDrawer = document.getElementById('user-basket-drawer-navigation');
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.attributeName === 'class') {
+        if (!mobileDrawer.classList.contains('-translate-x-full')) {
+          // دراور باز شده، سبد خرید موبایل رو به روز کن
+          loadMobileCartItems();
+        }
+      }
+    });
+  });
+
+  observer.observe(mobileDrawer, { attributes: true });
+});
+</script>
