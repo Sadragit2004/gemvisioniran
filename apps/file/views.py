@@ -31,6 +31,20 @@ def rich_groups(request):
     return render(request, "files_app/rich_groups.html", {"groups": groups})
 
 
+
+
+def file_group_view(request):
+    # فقط گروه‌های اصلی (بدون والد) را فیلتر کن
+    groups = Group.objects.filter(parent__isnull=True).prefetch_related('groups__groups')
+    context = {
+        'groups': groups
+    }
+
+    return render(request, 'files_app/gatigoeary_group_header.html', context)
+
+
+
+
 @cache_page(0 * 0)
 def file_detail(request, slug):
     file_obj = get_object_or_404(File, slug=slug, isActive=True)

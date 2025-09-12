@@ -1,3 +1,5 @@
+
+
 async function updateCartCount() {
   try {
     const response = await fetch("/order/count/", {
@@ -75,7 +77,7 @@ async function loadCartItems() {
                 <!-- Price -->
                 <div class="flex items-center justify-between gap-x-2">
                   <div class="text-primary">
-                    <span class="text-lg font-bold">${Number(item.price).toLocaleString()}</span>
+                    <span class="text-lg font-bold">${Number(item.final_price).toLocaleString()}</span>
                     <span class="text-sm">تومان</span>
                   </div>
                 </div>
@@ -105,6 +107,7 @@ async function loadCartItems() {
   }
 }
 
+
 // وقتی صفحه لود شد
 document.addEventListener("DOMContentLoaded", function() {
   updateCartCount();
@@ -115,22 +118,28 @@ async function addToCart(fileId) {
   try {
     const response = await fetch(`/order/add/${fileId}/`, {
       method: "GET",
-      headers: {
-        "X-Requested-With": "XMLHttpRequest"
-      }
+      headers: { "X-Requested-With": "XMLHttpRequest" }
     });
 
     const data = await response.json();
-    if (data.success) {
-      // آپدیت کردن تعداد آیتم‌های سبد خرید
-      document.getElementById("count_product").innerText = data.count;
-      document.getElementById("count_product2").innerText = data.count;
 
-      // آپدیت لیست سبد خرید
+    if (data.success) {
+      // آپدیت تعداد و لیست‌ها (با بررسی وجود المان‌ها)
+      showSuccessModal("cartSuccessModal", "cartSuccessSound");
+      const countProduct = document.getElementById("count_product");
+      const countProduct2 = document.getElementById("count_product2");
+
+      if (countProduct) countProduct.innerText = data.count;
+      if (countProduct2) countProduct2.innerText = data.count;
+
       updateCartItems(data.cart_items, data.total_price);
+      loadMobileCartItems();
+
+
     }
   } catch (error) {
     console.error("خطا در افزودن به سبد خرید:", error);
+    showToast("error", "خطا در افزودن محصول به سبد خرید ❌");
   }
 }
 
@@ -148,6 +157,7 @@ async function removeFromCart(fileId) {
 
     const data = await response.json();
     if (data.success) {
+
       // آپدیت کردن تعداد آیتم‌های سبد خرید
       document.getElementById("count_product").innerText = data.count;
       document.getElementById("count_product2").innerText = data.count;
@@ -247,7 +257,8 @@ function updateCartItems(items, totalPrice) {
             <!-- Price -->
             <div class="flex items-center justify-between gap-x-2">
               <div class="text-primary">
-                <span class="text-lg font-bold">${parseInt(item.price).toLocaleString()}</span>
+               <span class="text-lg font-bold">${parseFloat(item.final_price).toLocaleString()}</span>
+
                 <span class="text-sm">تومان</span>
               </div>
             </div>
@@ -328,7 +339,7 @@ async function loadMobileCartItems() {
                 <!-- Price -->
                 <div class="flex items-center justify-between gap-x-2">
                   <div class="text-primary">
-                    <span class="font-bold">${Number(item.price).toLocaleString()}</span>
+                    <span class="font-bold">${Number(item.final_price).toLocaleString()}</span>
                     <span class="text-xs">تومان</span>
                   </div>
                 </div>

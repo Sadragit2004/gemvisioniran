@@ -67,9 +67,13 @@
   {% include "partials/path.html" %}
   {% include "partials/header.html" %}
   {% include "partials/message.html" %}
+  {% include "partials/not.html" %}
+
+
 
 
     {% block content %}
+{% csrf_token %}
 
     {% endblock content %}
 
@@ -79,5 +83,30 @@
 
 
 </body>
+<script>
+function showToast(type, message) {
+  let container = document.getElementById("toast-container");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "toast-container";
+    container.className = "fixed top-5 right-5 z-50 space-y-2";
+    document.body.appendChild(container);
+  }
+
+  const toast = document.createElement("div");
+  toast.className = `px-4 py-3 rounded-lg shadow-lg text-white transition transform duration-300 ${
+    type === "success" ? "bg-green-600" : "bg-red-600"
+  }`;
+  toast.textContent = message;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(100%)";
+    setTimeout(() => toast.remove(), 500);
+  }, 3000);
+}
+</script>
 
 </html>

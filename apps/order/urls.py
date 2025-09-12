@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import add_to_cart,cart_count,show_item,remove_from_cart
+from .views import ApplyCopon,CheckOutOrder,CreateOrderView,add_to_cart,cart_count,show_item,remove_from_cart,get_cart_org
 
 app_name='order'
 
@@ -8,5 +8,10 @@ urlpatterns = [
    path("count/", cart_count, name="cart_count"),
    path('get-card/',show_item,name='get_card'),
    path("remove/<int:file_id>/", remove_from_cart, name="remove_from_cart"),
+   path("cart/", get_cart_org, name="cart"),
+   path('createOrder/',CreateOrderView.as_view(),name='createOrder'),
+   path('checkoutorder/<int:order_id>/',CheckOutOrder.as_view(),name='CheckOrder'),
+   path('apply_copon/<int:order_id>/',ApplyCopon.as_view(),name='apply_copon'),
+   
 
 ]

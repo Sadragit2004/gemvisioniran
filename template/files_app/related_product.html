@@ -41,13 +41,15 @@
               <div class="flex flex-col">
                 <div class="flex items-center justify-between">
                   <div></div>
-                  <a onclick="addToCart({{ file.id }})" aria-label="اضافه کردن {{file.title}} به سبد خرید">
-                  <span class="cursor-pointer">
-                    <svg class="h-6 w-6">
-                      <use xlink:href="#cart" />
-                    </svg>
-                  </span>
-                  </a>
+                 <a onclick="addToCart({{ file.id }}); showSuccessModal('cartSuccessModal', 'cartSuccessSound');"
+   aria-label="اضافه کردن {{file.title}} به سبد خرید">
+  <span class="cursor-pointer">
+    <svg class="h-6 w-6">
+      <use xlink:href="#cart" />
+    </svg>
+  </span>
+</a>
+
                   <!-- Price -->
                   <div class="text-sm font-bold text-primary md:text-base">
                     {{ product.price|intcomma }}

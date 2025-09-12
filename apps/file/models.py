@@ -27,7 +27,7 @@ class Base(models.Model):
 # ========================
 class Group(Base):
     parent = models.ForeignKey(
-        "self", verbose_name="والد", related_name="children",
+        "self", verbose_name="والد", related_name="groups",  # تغییر از children به groups
         on_delete=models.CASCADE, null=True, blank=True
     )
     description = RichTextUploadingField(
@@ -76,6 +76,50 @@ class File(Base):
     def get_absolute_url(self):
         return reverse("file:file_detail", kwargs={"slug": self.slug })
 
+
+
+    def get_discount_percentage(self):
+                # لیستی برای ذخیره تخفیف‌های فعال
+                discount_list = []
+
+                # بررسی تمامی تخفیف‌های مربوط به سبد تخفیف محصول
+                for dbd in self.site_of_discount.all():
+                    if (dbd.discountBasket.isActive and
+                        dbd.discountBasket.start_date <= timezone.now() and
+                        timezone.now() <= dbd.discountBasket.end_date):
+                        discount_list.append(dbd.discountBasket.discount)
+
+                # اگر تخفیفی پیدا شد، بیشترین مقدار را انتخاب می‌کنیم
+                if discount_list:
+                    max_discount = max(discount_list)
+                else:
+                    max_discount = 0  # اگر تخفیفی وجود نداشت
+
+                return int(max_discount)
+
+
+    def get_price_by_discount(self):
+
+        list1 = []
+
+        for dbd in  self.site_of_discount.all():
+            if (dbd.discountBasket.isActive==True and
+                dbd.discountBasket.start_date <= timezone.now() and
+                timezone.now() <= dbd.discountBasket.end_date):
+                list1.append(dbd.discountBasket.discount)
+
+        discount = 0
+        if (len(list1) > 0):
+            discount=max(list1)
+
+        num = self.price-(self.price*discount/100)
+
+        return int(num)
+
+
+    class Meta:
+        verbose_name = 'کالا'
+        verbose_name_plural = 'کالا ها'
 
 # ========================
 # مقدار ویژگی
@@ -148,7 +192,7 @@ class Comment(models.Model):
     is_suggest = models.BooleanField(default=False,verbose_name='پیشنهاد وضعیت')
     comment_parent = models.ForeignKey('Comment',on_delete=models.CASCADE,related_name='parent_comment',verbose_name='کامنت',blank=True,null=True)
     register_date = models.DateTimeField(auto_now_add=True,verbose_name='زمان ثبت')
-    is_active  = models.BooleanField(default=False)
+    isActive  = models.BooleanField(default=False)
 
 
 

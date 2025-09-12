@@ -421,7 +421,7 @@
 
                             <span class="text-xl font-bold">{{file.get_price_by_discount|intcomma}}</span>
 
-                            <span class="text-xl font-bold">{{file.price|intcomma}}</span>
+                           
 
                             <span>تومان</span>
                           </div>
@@ -1682,7 +1682,8 @@
         .then(response => response.json()) // تبدیل پاسخ سرور به JSON
         .then(result => {
             // ۵. نمایش پیام به کاربر
-            alert(result.message);
+
+            showSuccessModal("commentSuccessModal", "cartSuccessSound");
             if (result.status === 'success') {
                 document.getElementById('comment').value = ''; // خالی کردن فیلد متن
             }
@@ -1879,116 +1880,6 @@
 
       toggleContent(commentsContainer, toggleCommentsButton);
 
-      function add_to_cart_detail2(product_id, qty) {
-
-        if (qty === 0) {
-            qty = $("#counter2").val();
-        }
-
-        // Get the selected color and its value and title
-        var selectedColorId = $("input[name='color-desktop']:checked").val();
-        var selectedColorValue = $("label[for='color-desktop-" + selectedColorId + "'] p").text();
-        var selectedColorTitle = $("label[for='color-desktop-" + selectedColorId + "']").attr("title");
-
-        // Get the selected size and its value and title
-        var selectedSizeId = $("input[name='size-desktop']:checked").val();
-        var selectedSizeValue = $("label[for='size-desktop-" + selectedSizeId + "'] p").text();
-        var selectedSizeTitle = $("label[for='size-desktop-" + selectedSizeId + "']").attr("title");
-
-
-        // Perform the AJAX request
-        $.ajax({
-            type: 'GET',
-            url: '/orders/add_to_shop_cart/',
-            data: {
-                product_id: product_id,
-                qty: qty,
-                color_id: selectedColorId,
-                color_value: selectedColorValue,
-                color_title: selectedColorTitle,
-                size_id: selectedSizeId,
-                size_value: selectedSizeValue,
-                size_title: selectedSizeTitle
-            },
-            success: function(res) {
-                $('#count_product').text(res);
-                $('#count_product2').text(res);
-                show_function();
-
-                // Display the success modal
-                $('#div_my').removeClass('hidden');
-                var successSound = document.getElementById("successSound");
-                successSound.play();
-
-                // Hide the success modal after 2 seconds
-                setTimeout(function() {
-                  $('#div_my').addClass('hidden');
-                }, 2000);
-              },
-            });
-          }
-
-
-          document.addEventListener('DOMContentLoaded', function() {
-            // چک کردن وضعیت علاقه‌مندی و toggle2 وقتی صفحه لود می‌شود
-            check_favorite_status({{ user.id }}, {{ file.id }});
-            check_toggle2_status({{ user.id }}, {{ file.id }});
-        });
-
-        // تابع برای چک کردن وضعیت علاقه‌مندی
-
-
-
-
-          function toggle_favorite2(user_id, product_id) {
-            $.ajax({
-                type: 'GET',
-                url: '/comment/favorit/',
-                data: {
-                    user_id: user_id,
-                    product_id: product_id
-                },
-                success: function(res) {
-                    var heartFull = document.getElementById('heart-full-' + product_id);
-                    var heartEmpty = document.getElementById('heart-empty-' + product_id);
-
-                    if (res.status === 'added') {
-                        heartFull.style.display = 'inline';
-                        heartEmpty.style.display = 'none';
-                    } else if (res.status === 'removed') {
-                        heartFull.style.display = 'none';
-                        heartEmpty.style.display = 'inline';
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('AJAX Error:', status, error);
-                }
-            });
-        }
-
-
-        document.getElementById("toggle-btn").addEventListener("click", function () {
-          const featuresList = document.getElementById("features-list");
-
-          // Toggle max height
-          if (featuresList.style.maxHeight === "1500px" || !featuresList.style.maxHeight) {
-            featuresList.style.maxHeight = "none"; // نمایش کامل
-            this.textContent = "نمایش کمتر";
-          } else {
-            featuresList.style.maxHeight = "1500px"; // بازگشت به ارتفاع اولیه
-            this.textContent = "نمایش تمام ویژگی ها";
-          }
-
-          // Scroll smoothly to the features list and add some extra offset
-          const offset = -50; // مقدار فاصله اضافی از بالا
-          const elementPosition = featuresList.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset + offset;
-
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: "smooth"
-          });
-        });
 
 
 

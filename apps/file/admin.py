@@ -295,7 +295,7 @@ class FileFeatureAdmin(admin.ModelAdmin):
 # ========================
 class CommentIsActiveFilter(admin.SimpleListFilter):
     title = "وضعیت فعال بودن"
-    parameter_name = "is_active"
+    parameter_name = "isActive"
 
     def lookups(self, request, model_admin):
         return (
@@ -305,9 +305,9 @@ class CommentIsActiveFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         if self.value() == "active":
-            return queryset.filter(is_active=True)
+            return queryset.filter(isActive=True)
         if self.value() == "inactive":
-            return queryset.filter(is_active=False)
+            return queryset.filter(isActive=False)
         return queryset
 
 
@@ -336,10 +336,10 @@ class HasParentCommentFilter(admin.SimpleListFilter):
 class CommentAdmin(admin.ModelAdmin):
     list_display = (
         "user", "file", "text_short", "comment_parent_short",
-        "get_jalali_register_date", "is_active", "likes_count", "unlikes_count"
+        "get_jalali_register_date", "isActive", "likes_count", "unlikes_count"
     )
     list_display_links = ("user", "file")
-    list_editable = ("is_active",)
+    list_editable = ("isActive",)
     list_filter = (
         CommentIsActiveFilter,
         HasParentCommentFilter,
@@ -353,7 +353,7 @@ class CommentAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ("اطلاعات اصلی", {
-            "fields": ("user", "file", "text", "is_active",'is_suggest')
+            "fields": ("user", "file", "text", "isActive",'is_suggest')
         }),
         ("کامنت والد و تایید کننده", {
             "fields": ("comment_parent", "user_approving"),
@@ -400,12 +400,12 @@ class CommentAdmin(admin.ModelAdmin):
     actions = ["activate_comments", "deactivate_comments"]
 
     def activate_comments(self, request, queryset):
-        updated = queryset.update(is_active=True)
+        updated = queryset.update(isActive=True)
         self.message_user(request, f"{updated} کامنت فعال شد.")
     activate_comments.short_description = "فعال‌سازی کامنت‌های انتخاب‌شده"
 
     def deactivate_comments(self, request, queryset):
-        updated = queryset.update(is_active=False)
+        updated = queryset.update(isActive=False)
         self.message_user(request, f"{updated} کامنت غیرفعال شد.")
     deactivate_comments.short_description = "غیرفعال‌سازی کامنت‌های انتخاب‌شده"
 

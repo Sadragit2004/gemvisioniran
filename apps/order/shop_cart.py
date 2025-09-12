@@ -27,13 +27,13 @@ class ShopCart:
             self.cart[file_id] = {
                 "title": file.title,
                 "price": str(file.price),
+                'final_price':file.get_price_by_discount(),
                 "image": file.image.url if file.image else "",
             }
             self.save()
 
 
     def get_cart(self):
-
         items = []
         file_ids = self.cart.keys()
         files = File.objects.filter(id__in=file_ids)
@@ -44,9 +44,11 @@ class ShopCart:
                 "file": f,  # خود مدل File
                 "title": item["title"],
                 "price": item["price"],
+                "final_price": item["final_price"],  # 🔥 اضافه شد
                 "image": item["image"],
             })
         return items
+
 
 
 
@@ -83,7 +85,7 @@ class ShopCart:
         for file in files:
             item = self.cart[str(file.id)]
             item["file"] = file
-            item["price"] = Decimal(item["price"])
+            item["total_price"] = Decimal(item["final_price"])
             yield item
 
     def __len__(self):
@@ -96,4 +98,4 @@ class ShopCart:
         """
         مجموع قیمت فایل‌ها
         """
-        return sum(Decimal(item["price"]) for item in self.cart.values())
+        return sum(Decimal(item["final_price"]) for item in self.cart.values())

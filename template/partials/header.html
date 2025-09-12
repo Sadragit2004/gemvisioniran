@@ -35,7 +35,6 @@
             <!-- logo -->
             <div>
               <a href="{% url 'main:index' %}">
-               {% comment %} {% render_partial 'main:logo' %} {% endcomment %}
                <img style='width: 220px;' src="/media/images/others/gem.png" alt="لوگو سایت ">
               </a>
             </div>
@@ -102,7 +101,7 @@
                     <li>
                       <a
                         class="flex items-center gap-x-4 rounded-lg p-4 hover:text-primary dark:hover:text-emerald-400"
-                        href=""
+                        href="{% url 'panel:panel' %}"
                       >
                         <img
                           alt="profile"
@@ -245,7 +244,7 @@
 
                 <!-- Mega menu -->
 
-              {% comment %} {% render_partial 'product:product_group_view' %} {% endcomment %}
+              {% render_partial 'file:product_group_view' %}
               </ul>
 
               <ul data-color-dark="#f87171" data-color-light="#ef4444">

@@ -10,6 +10,30 @@ from uuid import uuid4
 from functools import wraps
 
 
+import socket
+
+def has_internet_connection():
+    """
+    Check if the device has an active internet connection.
+
+    Returns:
+        bool: True if the device has an active internet connection, False otherwise.
+    """
+    try:
+        # Try to connect to a well-known website
+        socket.create_connection(("www.google.com", 80))
+        return True
+    except OSError:
+        pass
+
+    try:
+        # Try to connect to a different well-known website
+        socket.create_connection(("www.example.com", 80))
+        return True
+    except OSError:
+        pass
+
+    return False
 
 def create_random_code(num):
     import random
@@ -115,3 +139,17 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
+
+
+
+from decimal import Decimal
+
+def price_by_delivery_tax(price, discount=0):
+    # تبدیل قیمت به Decimal برای دقت بیشتر
+    price_decimal = Decimal(str(price))
+
+    tax = price_decimal * Decimal('0.09')
+    total_sum = price_decimal + tax
+    total_sum = total_sum - (total_sum * Decimal(str(discount)) / Decimal('100'))
+
+    return int(total_sum), int(tax)

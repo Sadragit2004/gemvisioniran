@@ -8,7 +8,7 @@
     <div class="text-sm text-text/90">0 مورد</div>
     <a
       class="flex items-center gap-x-1 text-sm text-primary"
-      href=""
+      href="{% url 'order:cart' %}"
     >
       <div>مشاهده سبد خرید</div>
       <div>
@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <a href="">
+    <a href="{% url 'order:createOrder' %}">
       <button
         class="btn-primary w-32 py-3 text-sm"
         type="button"

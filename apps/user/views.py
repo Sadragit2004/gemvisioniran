@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.contrib import messages
-from django.contrib.auth import login,logout
+from django.contrib.auth import login, logout
 from django.views.decorators.csrf import csrf_exempt
 import random
 from datetime import timedelta
@@ -10,10 +10,15 @@ from .forms import MobileForm, VerificationCodeForm
 from .models import CustomUser, UserSecurity
 import utils
 
+import json
+from django.http import JsonResponse
+
+
 # ======================
 # مرحله 1: ورود شماره موبایل
 # ======================
 def send_mobile(request):
+    next_url = request.GET.get("next")  # گرفتن next از url
     if request.method == "POST":
         form = MobileForm(request.POST)
         if form.is_valid():
@@ -23,45 +28,43 @@ def send_mobile(request):
             user, created = CustomUser.objects.get_or_create(mobileNumber=mobile)
 
             if created:
-                # کاربر جدید ساخته شد
                 user.isActive = False
                 user.save()
-
-                # امنیت یوزر بسازیم
                 UserSecurity.objects.create(user=user)
 
             # تولید کد تأیید
             code = utils.create_random_code(5)
             expire_time = timezone.now() + timedelta(minutes=2)
 
-            # ذخیره در UserSecurity
             security = user.security
             security.activeCode = code
             security.expireCode = expire_time
             security.isBan = False
             security.save()
 
-            # TODO: اینجا باید کد رو با SMS API ارسال کنی
+            # TODO: ارسال SMS
             print(f"کد تأیید برای {mobile}: {code}")
 
-            # ارسال کاربر به صفحه‌ی تایید کد
+            # ذخیره شماره موبایل و next در سشن
             request.session["mobileNumber"] = mobile
+            if next_url:
+                request.session["next_url"] = next_url
+
             return redirect("account:verify_code")
 
     else:
         form = MobileForm()
 
-    return render(request, "user_app/register.html", {"form": form})
+    return render(request, "user_app/register.html", {"form": form, "next": next_url})
 
 
 # ======================
 # مرحله 2: تأیید کد
 # ======================
-import json
-from django.http import JsonResponse
-
 def verify_code(request):
     mobile = request.session.get("mobileNumber")
+    next_url = request.session.get("next_url")  # گرفتن next از سشن
+
     if not mobile:
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({'success': False, 'message': 'شماره موبایل یافت نشد'})
@@ -77,7 +80,7 @@ def verify_code(request):
         return redirect("account:send_mobile")
 
     if request.method == "POST":
-        # بررسی درخواست ارسال مجدد
+        # بررسی ارسال مجدد
         if "resend" in request.POST and request.POST["resend"] == "true":
             code = utils.create_random_code(5)
             expire_time = timezone.now() + timedelta(minutes=2)
@@ -87,7 +90,6 @@ def verify_code(request):
             security.isBan = False
             security.save()
 
-            # 📌 اینجا باید SMS API بزنی
             print(f"🔄 کد جدید برای {mobile}: {code}")
 
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -96,7 +98,7 @@ def verify_code(request):
             messages.success(request, "کد جدید ارسال شد ✅")
             return redirect("account:verify_code")
 
-        # ✅ حالت معمولی: بررسی کد
+        # بررسی کد
         form = VerificationCodeForm(request.POST)
         if form.is_valid():
             code = form.cleaned_data['activeCode']
@@ -110,8 +112,7 @@ def verify_code(request):
             if security.activeCode != code:
                 messages.error(request, "❌ کد تأیید اشتباه است.")
             else:
-
-                # فعال کردن کاربر
+                # فعال‌سازی و ورود
                 user.is_active = True
                 user.save()
 
@@ -121,6 +122,11 @@ def verify_code(request):
 
                 login(request, user)
                 messages.success(request, "✅ ورود موفقیت‌آمیز بود.")
+
+                # اگر next_url موجود بود برو همونجا
+                if next_url:
+                    return redirect(next_url)
+
                 return redirect("main:index")
 
     else:

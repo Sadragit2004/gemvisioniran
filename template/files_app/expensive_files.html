@@ -44,29 +44,40 @@
                 </a>
               </div>
               <!-- Prices -->
-              <div class="flex flex-col">
+            <div class="flex flex-col">
                 <!-- Old price -->
-
+                {% if file.price > file.get_price_by_discount %}
+                <div class="h-5 text-left">
+                  <del class="text-sm text-text/60 decoration-warning md:text-base">
+                    {{ file.price | intcomma }}
+                  </del>
+                </div>
+                {% endif %}
                 <!-- Discount & New Price -->
                 <div class="flex items-center justify-between">
                   <div>
-
+                    {% if file.price > file.get_price_by_discount %}
+                    <p class="w-9 rounded-full bg-warning py-px text-center text-sm text-white">
+                    {{file.get_discount_percentage}}%
+                    </p>
+                    {% endif %}
                   </div>
-                   {% csrf_token %}
-                 <a onclick="addToCart({{ file.id }})" aria-label="اضافه کردن {{file.title}} به سبد خرید">
-                  <span class="cursor-pointer">
-                    <svg class="h-6 w-6">
-                      <use xlink:href="#cart" />
-                    </svg>
-                  </span>
+                  <a onclick="addToCart({{ file.id }}); showSuccessModal('cartSuccessModal', 'cartSuccessSound');"
+                    <span class="cursor-pointer">
+                      <svg class="h-6 w-6">
+                        <use xlink:href="#cart" />
+                      </svg>
+                    </span>
                   </a>
-
                   <!-- New price -->
                   <div class="text-sm font-bold text-primary md:text-base">
-
-            {{file.price|intcomma}}
+                    {% if file.price > file.get_price_by_discount %}
+                    {{ file.get_price_by_discount | intcomma }}
                     <span class="text-xs font-light md:text-sm">تومان</span>
-
+                    {% else %}
+                    {{ file.price | intcomma }}
+                    <span class="text-xs font-light md:text-sm">تومان</span>
+                    {% endif %}
                   </div>
                 </div>
               </div>
@@ -84,3 +95,25 @@
   </div>
 </section>
 
+<script>
+  // تابع جداگانه برای نمایش مدال موفقیت و پخش صدا
+  function showCartSuccess() {
+    const modal = document.getElementById("commentSuccessModal");
+    const sound = document.getElementById("cartSuccessSound");
+
+    if (modal) {
+      modal.classList.remove("hidden");
+      modal.classList.add("block");
+
+      // بعد از 2 ثانیه مخفی شود
+      setTimeout(() => {
+        modal.classList.remove("block");
+        modal.classList.add("hidden");
+      }, 2000);
+    }
+
+    if (sound) {
+      sound.play();
+    }
+  }
+</script>
