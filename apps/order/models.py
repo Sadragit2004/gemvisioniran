@@ -103,7 +103,7 @@ class Order(Base):
     # قیمت کل سفارش قبل از تخفیف
         initial_total_price = 0
         for item in self.orders_details.all():
-            initial_total_price += item.file.price
+            initial_total_price += item.files.price
 
         # قیمت کل سفارش بعد از تخفیف
         finaly_total_price, tax = utils.price_by_delivery_tax(initial_total_price, self.discount)
@@ -131,6 +131,14 @@ class Order(Base):
 
 
 
+    def is_paid(self):
+        """بررسی آیا سفارش پرداخت شده است"""
+        # استفاده از مقادیر از کلاس OrderStatus
+        paid_statuses = [OrderStatus.CONFIRMED, OrderStatus.SHIPPED, OrderStatus.DELIVERED]
+        return self.status in paid_statuses and self.isFinally
+
+
+
     class Meta:
         verbose_name = 'سفارش'
         verbose_name_plural = 'سفارشات'
@@ -149,3 +157,17 @@ class OrderDetail(models.Model):
 
 # =================================================
 
+# در فایل models.py مربوط به فایل/محصولات
+
+class Favorite(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name="کاربر", related_name="favorites")
+    file = models.ForeignKey(File, on_delete=models.CASCADE, verbose_name="فایل", related_name="favorited_by")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="تاریخ ایجاد")
+
+    class Meta:
+        verbose_name = "علاقه‌مندی"
+        verbose_name_plural = "علاقه‌مندی‌ها"
+        unique_together = ('user', 'file')  # جلوگیری از اضافه کردن تکراری
+
+    def __str__(self):
+        return f"{self.user.mobileNumber} - {self.file.title}"

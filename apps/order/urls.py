@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ApplyCopon,CheckOutOrder,CreateOrderView,add_to_cart,cart_count,show_item,remove_from_cart,get_cart_org
+from .views import toggle_favorite,ApplyCopon,CheckOutOrder,CreateOrderView,add_to_cart,cart_count,show_item,remove_from_cart,get_cart_org
 
 app_name='order'
 
@@ -12,6 +12,7 @@ urlpatterns = [
    path('createOrder/',CreateOrderView.as_view(),name='createOrder'),
    path('checkoutorder/<int:order_id>/',CheckOutOrder.as_view(),name='CheckOrder'),
    path('apply_copon/<int:order_id>/',ApplyCopon.as_view(),name='apply_copon'),
-   
+   path('toggle-favorite/<int:file_id>/', toggle_favorite, name='toggle_favorite'),
+
 
 ]

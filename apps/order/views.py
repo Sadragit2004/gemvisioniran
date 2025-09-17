@@ -289,3 +289,22 @@ class ApplyCopon(View):
                 messages.error(request, 'سفارش شما موجود نیست')
 
         return redirect('order:CheckOrder', order_id)
+
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.shortcuts import get_object_or_404
+from .models import Favorite, File
+
+@require_POST
+def toggle_favorite(request, file_id):
+    if not request.user.is_authenticated:
+        return JsonResponse({'status': 'error', 'message': 'ابتدا وارد شوید'}, status=401)
+
+    file = get_object_or_404(File, id=file_id)
+    favorite, created = Favorite.objects.get_or_create(user=request.user, file=file)
+
+    if not created:
+        favorite.delete()
+        return JsonResponse({'status': 'removed', 'is_favorited': False})
+
+    return JsonResponse({'status': 'added', 'is_favorited': True})

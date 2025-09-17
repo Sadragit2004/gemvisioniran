@@ -105,7 +105,7 @@ class FileAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ("اطلاعات اصلی", {
-            "fields": ("title", "slug", "isActive", "price", "description")
+            "fields": ("title", "slug", "isActive", "price", "description",'downloadLink',)
         }),
         ("دسته‌بندی و تصویر", {
             "fields": ("group", "image", "thumb_large"),

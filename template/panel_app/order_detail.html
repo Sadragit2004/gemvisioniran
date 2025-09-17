@@ -1,0 +1,388 @@
+{% extends "dp_template.html" %}
+{% load humanize %}
+{% block content %}
+
+<div class="sr-only"></div>
+<div class="flex min-h-screen flex-col">
+  <main class="flex-grow bg-background pb-14 pt-36 xs:pt-36">
+    <div class="container">
+      <div class="grid grid-cols-12 gap-4">
+        <!-- sidebar -->
+        {% include "panel_app/partials/side_bar.html" %}
+
+        <!-- content -->
+        <div class="col-span-12 lg:col-span-9">
+          <div class="rounded-lg bg-muted p-5 shadow-base">
+            <div class="mb-16 flex flex-col items-center justify-between gap-y-8 xs:flex-row">
+              <!-- Title -->
+              <h1 class="relative w-fit text-xl font-medium">
+                جزئیات سفارش {{order.id}}#
+                <span class="absolute right-0 top-10 h-[3px] w-full rounded-full bg-primary"></span>
+              </h1>
+
+              <span id="jalali-date">{{ order.get_jalali_createAt }}</span>
+
+              {% if order.status == 'pending' %}
+              <a href="{% url 'order:CheckOrder' order_id=order.id %}" class="btn-secondary w-full px-4 py-2 xs:w-fit">
+                پرداخت
+                <svg class="h-5 w-5">
+                  <use xlink:href="#chevron-left" />
+                </svg>
+              </a>
+
+              {% else %}
+              <a href="" class="btn-secondary w-full px-4 py-2 xs:w-fit">
+                برگشت
+                <svg class="h-5 w-5">
+                  <use xlink:href="#chevron-left" />
+                </svg>
+              </a>
+              {% endif %}
+            </div>
+
+            <div class="mb-8">
+              <div class="rounded-lg border shadow-base">
+                <div class="p-4">
+                  <!-- head -->
+                  <div class="flex items-center justify-between pb-6">
+                    <div class="flex items-center gap-x-2 text-primary">
+                      <svg class="h-6 w-6">
+                        <use xlink:href="#outline-check"></use>
+                      </svg>
+                      <p class="font-medium md:text-lg">{{ order.get_status_display }}</p>
+                    </div>
+                  </div>
+
+                  <!-- content -->
+                  <div class="flex flex-col gap-6 pb-6 xl:flex-row xl:justify-between xl:gap-16">
+                    <div class="flex flex-col gap-4 md:flex-row">
+                      <div class="flex items-center justify-between gap-x-2 md:justify-start">
+                        <div class="text-sm text-text/60 md:text-base">کد پیگیری سفارش</div>
+                        <div class="text-sm text-text/90 md:text-base">{{ order.orderCode }}</div>
+                      </div>
+                      <div class="flex items-center justify-between gap-x-2 md:justify-start">
+                        <div class="text-sm text-text/60 md:text-base">مبلغ کل</div>
+                        <div class="text-primary">
+                          <span class="font-bold md:text-lg">{{ order.get_order_total_price|intcomma }}</span>
+                          <span class="text-sm md:text-base">ریال</span>
+                        </div>
+                      </div>
+                      <div class="flex items-center justify-between gap-x-2 md:justify-start">
+                        <div class="text-sm text-text/60 md:text-base">تاریخ</div>
+                        <div class="text-sm text-text/90 md:text-base">{{ order.get_jalali_createAt }}</div>
+                      </div>
+                    </div>
+                    <div class="flex flex-grow flex-col gap-y-4">
+                      <!-- order status -->
+                      {% with status_info=order.status_info %}
+                      <div class="flex items-center gap-x-2 text-yellow-500 dark:text-yellow-400">
+                        {{ status_info.svg_stutus|safe }}
+                        <p class="text-sm font-medium md:text-base">{{ status_info.title_status }}</p>
+                      </div>
+                      <!-- order step -->
+                      <div class="relative h-2 w-full rounded-full bg-background dark:bg-zinc-800">
+                        <span class="absolute inset-y-0 right-0 rounded-full bg-yellow-500 dark:bg-yellow-400"
+                              style="width: {{ status_info.percent_develop }}%"></span>
+                      </div>
+                      <!-- order date -->
+                      <div class="flex items-center justify-between text-sm text-yellow-500 dark:text-yellow-400 md:text-base">
+                        <span>{{ order.get_jalali_createAt }}</span>
+                      </div>
+                      {% endwith %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-8">
+              <div class="rounded-lg border p-4 shadow-base">
+                <div class="mb-6 flex flex-col gap-4 md:flex-row flex-wrap">
+                  <div class="flex justify-between gap-x-2 lg:justify-start">
+                    <div class="text-sm text-text/60 md:text-base">مبلغ مرسوله</div>
+                    <div class="text-primary">
+                      <span class="font-bold md:text-lg">{{ order.get_order_total_price|intcomma }}</span>
+                      <span class="text-sm md:text-base">ریال</span>
+                    </div>
+                  </div>
+                  <div class="flex justify-between gap-x-2 lg:justify-start">
+                    <div class="text-sm text-text/60 md:text-base">تخفیف کالا ها</div>
+                    <div class="text-red-500 dark:text-red-400">
+                      <span class="font-bold md:text-lg">{{ order.get_discounted_amount|intcomma }}</span>
+                      <span class="text-sm md:text-base">ریال</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            {% if address %}
+            <div class="mb-8">
+              <h2 class="mb-8 flex items-center gap-x-4 text-lg text-text/90">
+                <span class="h-2 w-2 rounded-full bg-primary"></span>
+                آدرس تحویل سفارش
+              </h2>
+              <div class="block rounded-lg border p-4 shadow-base hover:border-border/50 dark:hover:border-white/10">
+                <div class="mb-4 flex items-center justify-between gap-x-2 sm:mb-2">
+                  <p class="line-clamp-2 h-10 text-sm text-text/90 xs:text-base sm:line-clamp-1 sm:h-6">
+                    {{ address.address }}
+                  </p>
+                </div>
+                <div class="flex items-center justify-between gap-x-2">
+                  <p class="line-clamp-1 text-sm text-text/60">
+                    {{ request.user.name }} {{ request.user.family }}
+                  </p>
+                  <div>
+                    <button data-modal-target="address-change-modal" data-modal-toggle="address-change-modal"
+                            class="btn-primary-nobg text-sm xs:px-4 xs:py-2 md:text-base">
+                      <svg class="h-5 w-5">
+                        <use xlink:href="#address-edit" />
+                      </svg>
+                      تغییر آدرس تحویل
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            <div class="mb-8">
+              <h2 class="mb-8 flex items-center gap-x-4 text-lg text-text/90">
+                <span class="h-2 w-2 rounded-full bg-primary"></span>
+                اقلام سفارش
+                <span class="text-sm text-text/60"> ( {{ order.orders_details.all|length }} کالا ) </span>
+              </h2>
+
+              <!-- بخش اقلام سفارش -->
+              <ul class="divide-y">
+                {% for detail in order.orders_details.all %}
+                <li>
+                  <div class="py-4 sm:py-6">
+                    <div class="grid grid-cols-12 gap-4 items-center">
+                      <!-- Image -->
+                      <div class="col-span-3 sm:col-span-2 flex justify-center">
+                        <a href="{{ detail.files.get_absolute_url }}">
+                          <img alt="{{ detail.files.title }} - image"
+                               class="w-20 h-20 object-cover rounded-lg sm:w-24 sm:h-24"
+                               src="{{ detail.files.image.url }}" />
+                        </a>
+                      </div>
+
+                      <!-- File info -->
+                      <div class="col-span-6 sm:col-span-6 flex flex-col justify-center">
+                        <h3 class="text-sm sm:text-base font-medium text-text/90">
+                          {{ detail.files.title }}
+                        </h3>
+                        <div class="flex items-center gap-2 mt-1">
+                          <span class="text-primary">
+                            <span class="font-bold">{{ detail.price|intcomma }}</span>
+                            <span class="text-xs sm:text-sm">تومان</span>
+                          </span>
+                          <span class="text-xs text-text/60">•</span>
+                          <span class="text-xs text-text/60">{{ detail.files.get_file_type_display }}</span>
+                        </div>
+                      </div>
+
+                      <!-- Download button / Status -->
+                      <div class="col-span-3 sm:col-span-4 flex flex-col items-center sm:items-end gap-2">
+                        {% if order.is_paid %}
+                          <div class="w-full max-w-xs">
+                            <div class="flex items-center gap-3">
+                              <button onclick="downloadFile('{{ detail.files.id }}', '{{ order.id }}', '{{ detail.files.get_download_filename }}')"
+                                      class="btn-primary flex items-center gap-2 px-3 py-2 text-sm rounded-lg shadow">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"/>
+                                </svg>
+                                دانلود
+                              </button>
+                            </div>
+
+                            <!-- Progress bar container -->
+                            <div id="progress-container-{{ detail.files.id }}" class="hidden mt-2 w-full">
+                              <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                <span id="percent-{{ detail.files.id }}">0%</span>
+                                <span id="status-{{ detail.files.id }}">در حال آماده‌سازی...</span>
+                              </div>
+                              <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+                                <div id="progress-bar-{{ detail.files.id }}"
+                                     class="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                                     style="width: 0%"></div>
+                              </div>
+                            </div>
+                          </div>
+                        {% else %}
+                          <span class="text-sm text-gray-500">پرداخت نشده</span>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Mobile Profile Menu Drawer -->
+  {% include "panel_app/partials/side_bar_mobile.html" %}
+
+  <!-- Address Change modal -->
+  <div id="address-change-modal" tabindex="-1" aria-hidden="true"
+       class="main-scroll fixed left-0 right-0 top-0 z-50 hidden h-[calc(100%-1rem)] max-h-full w-full overflow-y-auto overflow-x-hidden p-4 md:inset-0">
+    <div class="relative max-h-full w-full max-w-2xl">
+      <div class="divide-y overflow-hidden rounded-lg bg-muted shadow ring-1 ring-gray-100 dark:ring-white/5">
+        <div class="px-4 py-5 sm:px-6">
+          <div class="flex items-center justify-between">
+            <h3 class="md:text-lg">تغییر آدرس تحویل</h3>
+            <button class="" data-modal-hide="address-change-modal" type="button">
+              <svg class="h-5 w-5">
+                <use xlink:href="#close" />
+              </svg>
+              <span class="sr-only">Close menu</span>
+            </button>
+          </div>
+        </div>
+        <div class="space-y-6 px-4 py-5 sm:p-6">
+          <fieldset class="space-y-6">
+            <legend class="sr-only">Address</legend>
+            <form action="" method='post'>
+              {% csrf_token %}
+              <div>
+                <label for="new-address" class="block text-sm font-medium text-gray-700">آدرس جدید خود را وارد کنید</label>
+                {{ form.text }}
+              </div>
+              <div class="flex justify-end mt-4">
+                <button type='submit' class="btn-primary w-full px-4 py-2 md:w-auto">
+                  <span>ثبت آدرس جدید</span>
+                </button>
+              </div>
+            </form>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+async function downloadFile(fileId, orderId, fileName) {
+  const url = `/panel/download/${orderId}/${fileId}/`;
+  const percentEl = document.getElementById(`percent-${fileId}`);
+  const progressBar = document.getElementById(`progress-bar-${fileId}`);
+  const statusEl = document.getElementById(`status-${fileId}`);
+  const progressContainer = document.getElementById(`progress-container-${fileId}`);
+
+  // نمایش progress bar
+  progressContainer.classList.remove("hidden");
+  percentEl.textContent = "0%";
+  statusEl.textContent = "در حال آماده‌سازی...";
+  progressBar.style.width = "0%";
+
+  try {
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error("خطا در دانلود فایل");
+    }
+
+    // دریافت نوع فایل از هدر پاسخ
+    const contentType = response.headers.get('content-type') || '';
+    const contentDisposition = response.headers.get('content-disposition') || '';
+
+    // استخراج پسوند فایل از هدر Content-Disposition
+    let fileExtension = '.bin';
+    let finalFileName = fileName;
+
+    // اگر هدر Content-Disposition وجود دارد، نام فایل را از آن استخراج کنید
+    if (contentDisposition) {
+      const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+      if (filenameMatch && filenameMatch[1]) {
+        finalFileName = filenameMatch[1].replace(/['"]/g, '');
+      }
+    }
+
+    // اگر نام فایل پسوند ندارد، بر اساس Content-Type پسوند اضافه کنید
+    if (!finalFileName.includes('.')) {
+      if (contentType.includes('wordprocessingml')) {
+        fileExtension = '.docx';
+      } else if (contentType.includes('pdf')) {
+        fileExtension = '.pdf';
+      } else if (contentType.includes('image')) {
+        fileExtension = '.jpg';
+      } else if (contentType.includes('text')) {
+        fileExtension = '.txt';
+      }
+      finalFileName += fileExtension;
+    }
+
+    const contentLength = response.headers.get("Content-Length");
+    const total = contentLength ? parseInt(contentLength, 10) : 0;
+    let receivedLength = 0;
+    const chunks = [];
+
+    const reader = response.body.getReader();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+
+      chunks.push(value);
+      receivedLength += value.length;
+
+      // بروزرسانی progress bar
+      if (total) {
+        const percent = Math.round((receivedLength / total) * 100);
+        percentEl.textContent = percent + "%";
+        progressBar.style.width = percent + "%";
+        statusEl.textContent = percent === 100 ? "تکمیل شد" : "در حال دانلود...";
+      }
+    }
+
+    // ایجاد فایل برای دانلود
+    const blob = new Blob(chunks);
+    const downloadUrl = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.style.display = "none";
+    a.href = downloadUrl;
+    a.download = finalFileName;
+    document.body.appendChild(a);
+    a.click();
+
+    // پاکسازی
+    window.URL.revokeObjectURL(downloadUrl);
+    document.body.removeChild(a);
+
+    // مخفی کردن progress bar پس از 2 ثانیه
+    setTimeout(() => {
+      progressContainer.classList.add("hidden");
+    }, 2000);
+
+  } catch (error) {
+    statusEl.textContent = "خطا در دانلود";
+    percentEl.textContent = "0%";
+    progressBar.style.width = "0%";
+    progressBar.classList.add("bg-red-600");
+    console.error("Download error:", error);
+  }
+}
+</script>
+
+<style>
+/* استایل اضافی برای progress bar */
+.bg-blue-600 {
+  background-color: #2563eb;
+}
+.bg-red-600 {
+  background-color: #dc2626;
+}
+.transition-all {
+  transition: all 0.3s ease;
+}
+</style>
+
+{% endblock content %}

@@ -2,6 +2,7 @@ from django.shortcuts import render,get_object_or_404
 from django.db.models import Q,Count,Min,Max
 from django.views.decorators.cache import cache_page
 from .models import File, Group
+from apps.order.models import Favorite
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from apps.file.models import File
@@ -12,6 +13,7 @@ import json
 from django.views import View
 from django.template.loader import render_to_string
 from .filters import ProductFilter
+
 
 def file_list_view(request, template_name, order_by_field):
     files = File.objects.filter(isActive=True).order_by(order_by_field)[:10]
@@ -48,7 +50,11 @@ def file_group_view(request):
 @cache_page(0 * 0)
 def file_detail(request, slug):
     file_obj = get_object_or_404(File, slug=slug, isActive=True)
-    return render(request, 'files_app/file_detail.html', {'file': file_obj})
+    is_favorited = False
+    if request.user.is_authenticated:
+            is_favorited = Favorite.objects.filter(user=request.user, file=file_obj).exists()
+
+    return render(request, 'files_app/file_detail.html', {'file': file_obj,'is_favorited': is_favorited,})
 
 
 def related_products(request, *args, **kwargs):
@@ -64,6 +70,7 @@ def related_products(request, *args, **kwargs):
             ))
 
         related_products = list(set(related_products))
+
 
         context = {
             'current_product': current_product,

@@ -24,7 +24,7 @@ class Peyment(models.Model):
 
 
     def __str__(self) -> str:
-        return f'{self.order}\t\t{self.customer}\t\t{self.ref_id}'
+        return f'{self.order}\t\t{self.customer}\t\t{self.refId}'
 
 
 

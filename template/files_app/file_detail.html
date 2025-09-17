@@ -91,21 +91,25 @@
                         <!-- add to favorite -->
 
                         <div>
-                          <button
-                          onclick='toggle_favorite({{ user.id }}, {{ file.id }})'
-                          data-tooltip-target="add-to-favorite"
-                          type="button">
+                         <button
+                onclick='toggleFavorite({{ file.id }})'
+                data-tooltip-target="add-to-favorite"
+                type="button"
+                class="favorite-btn p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
+                id="favorite-btn-{{ file.id }}"
+              >
+                <!-- قلب پر (طراحی مدرن) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 heart-full"
+                     viewBox="0 0 24 24" fill="currentColor" style="{% if is_favorited %}display:block;{% else %}display:none;{% endif %}">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
 
-                          <!-- قلب پر -->
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-suit-heart-fill heart-full" viewBox="0 0 16 16" style="{% if is_favorited %}display:inline;{% else %}display:none;{% endif %}">
-                              <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1"/>
-                          </svg>
-
-                          <!-- قلب خالی -->
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-suit-heart heart-empty" viewBox="0 0 16 16" style="{% if is_favorited %}display:none;{% else %}display:inline;{% endif %}">
-                              <path d="m8 6.236-.894-1.789c-.222-.443-.607-1.08-1.152-1.595C5.418 2.345 4.776 2 4 2 2.324 2 1 3.326 1 4.92c0 1.211.554 2.066 1.868 3.37.337.334.721.695 1.146 1.093C5.122 10.423 6.5 11.717 8 13.447c1.5-1.73 2.878-3.024 3.986-4.064.425-.398.81-.76 1.146-1.093C14.446 6.986 15 6.131 15 4.92 15 3.326 13.676 2 12 2c-.777 0-1.418.345-1.954.852-.545.515-.93 1.152-1.152 1.595zm.392 8.292a.513.513 0 0 1-.784 0c-1.601-1.902-3.05-3.262-4.243-4.381C1.3 8.208 0 6.989 0 4.92 0 2.755 1.79 1 4 1c1.6 0 2.719 1.05 3.404 2.008.26.365.458.716.596.992a7.6 7.6 0 0 1 .596-.992C9.281 2.049 10.4 1 12 1c2.21 0 4 1.755 4 3.92 0 2.069-1.3 3.288-3.365 5.227-1.193 1.12-2.642 2.48-4.243 4.38z"/>
-                          </svg>
-                      </button>
+                <!-- قلب خالی (طراحی مدرن) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400 heart-empty"
+                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="{% if is_favorited %}display:none;{% else %}display:block;{% endif %}">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </button>
 
 
                           <div
@@ -421,7 +425,7 @@
 
                             <span class="text-xl font-bold">{{file.get_price_by_discount|intcomma}}</span>
 
-                           
+
 
                             <span>تومان</span>
                           </div>
@@ -535,20 +539,25 @@
                   <div class="flex items-center gap-x-4">
                     <!-- add to favorite -->
                     <div>
-                      <button
-                      onclick="toggle_favorite2({{ user.id }}, {{ file.id }})"
-                      type="button">
+                       <button
+                onclick='toggleFavorite({{ file.id }})'
+                data-tooltip-target="add-to-favorite"
+                type="button"
+                class="favorite-btn p-2 rounded-full hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
+                id="favorite-btn-{{ file.id }}"
+              >
+                <!-- قلب پر (طراحی مدرن) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-500 heart-full"
+                     viewBox="0 0 24 24" fill="currentColor" style="{% if is_favorited %}display:block;{% else %}display:none;{% endif %}">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
 
-                      <!-- قلب پر -->
-                      <svg id="heart-full-{{ file.id }}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-suit-heart-fill heart-full" viewBox="0 0 16 16" style="{% if file.get_user_favorit %}display:inline;{% else %}display:none;{% endif %}">
-                          <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1"/>
-                      </svg>
-
-                      <!-- قلب خالی -->
-                      <svg id="heart-empty-{{ file.id }}" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-suit-heart heart-empty" viewBox="0 0 16 16" style="{% if file.get_user_favorit %}display:none;{% else %}display:inline;{% endif %}">
-                          <path d="m8 6.236-.894-1.789c-.222-.443-.607-1.08-1.152-1.595C5.418 2.345 4.776 2 4 2 2.324 2 1 3.326 1 4.92c0 1.211.554 2.066 1.868 3.37.337.334.721.695 1.146 1.093C5.122 10.423 6.5 11.717 8 13.447c1.5-1.73 2.878-3.024 3.986-4.064.425-.398.81-.76 1.146-1.093C14.446 6.986 15 6.131 15 4.92 15 3.326 13.676 2 12 2c-.777 0-1.418.345-1.954.852-.545.515-.93 1.152-1.152 1.595zm.392 8.292a.513.513 0 0 1-.784 0c-1.601-1.902-3.05-3.262-4.243-4.381C1.3 8.208 0 6.989 0 4.92 0 2.755 1.79 1 4 1c1.6 0 2.719 1.05 3.404 2.008.26.365.458.716.596.992a7.6 7.6 0 0 1 .596-.992C9.281 2.049 10.4 1 12 1c2.21 0 4 1.755 4 3.92 0 2.069-1.3 3.288-3.365 5.227-1.193 1.12-2.642 2.48-4.243 4.38z"/>
-                      </svg>
-                  </button>
+                <!-- قلب خالی (طراحی مدرن) -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400 heart-empty"
+                     viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="{% if is_favorited %}display:none;{% else %}display:block;{% endif %}">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </button>
 
 
 
@@ -1633,6 +1642,92 @@
 
     </div>
 
+<!-- در بخش head یا قبل از بستن body -->
+<script>
+// گرفتن CSRF Token از کوکی‌ها
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== "") {
+    const cookies = document.cookie.split(";");
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + "=")) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
+// تابع تغییر وضعیت علاقه‌مندی
+// تابع تغییر وضعیت علاقه‌مندی
+async function toggleFavorite(fileId) {
+  const btn = document.getElementById(`favorite-btn-${fileId}`);
+  if (!btn) return;
+
+  const heartFull = btn.querySelector(".heart-full");
+  const heartEmpty = btn.querySelector(".heart-empty");
+  const tooltip = document.getElementById("add-to-favorite");
+
+  // انیمیشن کلیک
+  btn.classList.add("scale-90");
+  setTimeout(() => btn.classList.remove("scale-90"), 150);
+
+  try {
+    const response = await fetch(`/order/toggle-favorite/${fileId}/`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": getCookie("csrftoken"),
+        "Content-Type": "application/json",
+        "X-Requested-With": "XMLHttpRequest"
+      },
+      credentials: "same-origin"
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      if (data.status === "added") {
+        // تغییر به قلب پر (قرمز)
+        heartFull.style.display = "block";
+        heartEmpty.style.display = "none";
+
+        heartFull.classList.add("text-red-500");
+        heartEmpty.classList.remove("text-gray-400");
+
+        if (tooltip) tooltip.innerHTML = "حذف از علاقه‌مندی‌ها";
+
+        // انیمیشن پرش
+        btn.classList.add("animate-bounce");
+        setTimeout(() => btn.classList.remove("animate-bounce"), 1000);
+
+      } else if (data.status === "removed") {
+        // تغییر به قلب خالی (سیاه/خاکستری)
+        heartFull.style.display = "none";
+        heartEmpty.style.display = "block";
+
+        heartFull.classList.remove("text-red-500");
+        heartEmpty.classList.remove("text-red-500");
+        heartEmpty.classList.add("text-gray-400"); // یا text-black اگر بخوای سیاه شه
+
+        if (tooltip) tooltip.innerHTML = "افزودن به علاقه‌مندی‌ها";
+      }
+    } else {
+      alert(data.message || "خطایی رخ داد");
+    }
+
+  } catch (error) {
+    console.error("Error:", error);
+    alert("خطایی در ارتباط با سرور رخ داد");
+  }
+}
+
+
+// برای اینکه از هرجایی بشه صدا زد
+window.toggleFavorite = toggleFavorite;
+</script>
+
 
 <script>
     function getCookie(name) {
@@ -1693,6 +1788,9 @@
             alert('خطایی در ارتباط با سرور رخ داد.');
         });
     }
+
+
+
 </script>
     <script>
 
@@ -1732,53 +1830,6 @@
     document.addEventListener('DOMContentLoaded', function() {
       check_favorite_status({{ user.id }}, {{ file.id }});
   });
-
-  function check_favorite_status(user_id, product_id) {
-      $.ajax({
-          type: 'GET',
-          url: '/comment/check-favorite/',
-          data: {
-              user_id: user_id,
-              product_id: product_id
-          },
-          success: function(res) {
-              var heartFull = document.querySelector('svg.heart-full');
-              var heartEmpty = document.querySelector('svg.heart-empty');
-
-              if (res.is_favorited) {
-                  heartFull.style.display = 'inline';
-                  heartEmpty.style.display = 'none';
-              } else {
-                  heartFull.style.display = 'none';
-                  heartEmpty.style.display = 'inline';
-              }
-          }
-      });
-  }
-
-  function toggle_favorite(user_id, product_id) {
-      $.ajax({
-          type: 'GET',
-          url: '/comment/favorit/',
-          data: {
-              user_id: user_id,
-              product_id: product_id
-          },
-          success: function(res) {
-              var heartFull = document.querySelector('svg.heart-full');
-              var heartEmpty = document.querySelector('svg.heart-empty');
-
-              if (res.status === 'added') {
-                  heartFull.style.display = 'inline';
-                  heartEmpty.style.display = 'none';
-              } else if (res.status === 'removed') {
-                  heartFull.style.display = 'none';
-                  heartEmpty.style.display = 'inline';
-              }
-          }
-      });
-  }
-
 
 
 
@@ -1880,9 +1931,7 @@
 
       toggleContent(commentsContainer, toggleCommentsButton);
 
-
-
-
+// تابع برای تغییر وضعیت علاقه‌مندی
     </script>
 
 

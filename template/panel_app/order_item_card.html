@@ -1,7 +1,7 @@
 {% load humanize %}
 
 <div class="rounded-lg border shadow-base">
-  <a href="#"> <div class="p-4">
+  <a href="{% url 'panel:order-detail' order_id=order.id %}"> <div class="p-4">
       <div class="flex items-center justify-between pb-6">
         <div class="flex items-center gap-x-2 text-primary">
           {% autoescape off %}{{ order.status_info.svg_stutus }}{% endautoescape %}
