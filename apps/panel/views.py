@@ -3,8 +3,10 @@ from django.shortcuts import render,get_object_or_404,redirect
 from django.contrib.auth.decorators import login_required
 from apps.order.models import Order, OrderStatus
 from django.conf import settings
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404,HttpResponse, HttpResponseServerError
 import os
+import requests
+
 # Create your views here.
 
 
@@ -94,61 +96,72 @@ def order_detail_view(request, order_id):
     return render(request, 'panel_app/order_detail.html', context)
 
 
-# panel_app/views.py
+# p
 
-from django.http import StreamingHttpResponse, Http404, HttpResponseForbidden
-from django.shortcuts import get_object_or_404
+def download_file_view(request, order_id, file_id):
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    file_obj = get_object_or_404(File, id=file_id)
+
+    # لینک مستقیم (مثل Google Drive)
+    url = file_obj.downloadLink
+
+    # دانلود فایل به صورت stream
+    r = requests.get(url, stream=True)
+    if r.status_code != 200:
+        return HttpResponse("خطا در دانلود فایل", status=400)
+
+    # تعیین نام نهایی
+    filename = f"{file_obj.title}.zip"  # یا از db پسوند ذخیره کن
+
+    response = HttpResponse(r.content, content_type="application/octet-stream")
+    response["Content-Disposition"] = f'attachment; filename="{filename}"'
+    return response
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from apps.order.models import Order
-from apps.file.models import File
-import requests
-import os
-from urllib.parse import urlparse
+from django.http import JsonResponse
+from django.core.paginator import Paginator
+from apps.order.models import Favorite, File
+
 
 @login_required
-def download_file_view(request, order_id, file_id):
-    """
-    این ویو مسئولیت دانلود امن فایل را بر عهده دارد.
-    """
-    # ۱. بررسی اینکه آیا سفارش متعلق به همین کاربر است یا نه
-    order = get_object_or_404(Order, id=order_id, user=request.user)
+def favorites_list(request):
+    # دریافت تمام علاقه‌مندی‌های کاربر
+    favorites = Favorite.objects.filter(user=request.user).select_related('file')
 
-    # ۲. بررسی اینکه آیا سفارش پرداخت شده است
-    if not order.is_paid():
-        return HttpResponseForbidden("دسترسی غیرمجاز! این سفارش هنوز پرداخت نشده است.")
+    # صفحه‌بندی
+    paginator = Paginator(favorites, 12)  # 12 آیتم در هر صفحه
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
 
-    # ۳. بررسی اینکه آیا فایل درخواستی در این سفارش وجود دارد
-    if not order.orders_details.filter(files_id=file_id).exists():
-        raise Http404("این فایل در سفارش شما یافت نشد.")
+    context = {
+        'favorits': page_obj,
+    }
+    return render(request, 'panel_app/favorites.html', context)
 
-    # ۴. دریافت فایل و لینک دانلود آن
-    file_to_download = get_object_or_404(File, id=file_id)
-    external_url = file_to_download.downloadLink
+@login_required
+def delete_favorite(request, favorite_id):
+    if request.method == 'POST':
+        favorite = get_object_or_404(Favorite, id=favorite_id, user=request.user)
+        favorite.delete()
 
-    if not external_url:
-        raise Http404("لینک دانلودی برای این فایل تعریف نشده است.")
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'success', 'message': 'علاقه‌مندی با موفقیت حذف شد'})
 
-    try:
-        # ۵. ارسال درخواست به لینک خارجی برای دریافت فایل
-        # stream=True باعث می‌شود فایل به صورت تکه‌تکه دانلود شود تا حافظه سرور پر نشود
-        response = requests.get(external_url, stream=True)
-        response.raise_for_status()  # اگر لینک خراب بود یا خطایی رخ داد، اینجا متوقف می‌شود
+        return redirect('favorites_list')
 
-        # ۶. آماده‌سازی پاسخ برای مرورگر کاربر
-        # ما فایل را به صورت جریانی (stream) به کاربر می‌دهیم
-        streaming_response = StreamingHttpResponse(
-            response.iter_content(chunk_size=8192),
-            content_type=response.headers.get('Content-Type', 'application/octet-stream')
-        )
+    return JsonResponse({'status': 'error', 'message': 'درخواست نامعتبر'})
 
-        # ۷. تنظیم هدرها برای اینکه مرورگر فایل را دانلود کند
-        # استخراج نام فایل از URL
-        filename = os.path.basename(urlparse(external_url).path)
-        streaming_response['Content-Disposition'] = f'attachment; filename="{filename}"'
-        streaming_response['Content-Length'] = response.headers.get('Content-Length', 0)
+@login_required
+def delete_all_favorites(request):
+    if request.method == 'POST':
+        Favorite.objects.filter(user=request.user).delete()
 
-        return streaming_response
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'success', 'message': 'تمام علاقه‌مندی‌ها با موفقیت حذف شدند'})
 
-    except requests.exceptions.RequestException as e:
-        # در صورت بروز خطا در دانلود از لینک اصلی
-        return HttpResponseForbidden(f"خطا در دسترسی به فایل: {e}")
+        return redirect('favorites_list')
+
+    return JsonResponse({'status': 'error', 'message': 'درخواست نامعتبر'})

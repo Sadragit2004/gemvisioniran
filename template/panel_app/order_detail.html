@@ -189,28 +189,17 @@
                         {% if order.is_paid %}
                           <div class="w-full max-w-xs">
                             <div class="flex items-center gap-3">
-                              <button onclick="downloadFile('{{ detail.files.id }}', '{{ order.id }}', '{{ detail.files.get_download_filename }}')"
-                                      class="btn-primary flex items-center gap-2 px-3 py-2 text-sm rounded-lg shadow">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
-                                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4"/>
-                                </svg>
-                                دانلود
-                              </button>
-                            </div>
+                             <!-- دکمه دانلود -->
+                               <button type="button"
+                                    class="download-btn"
+                                   >
+                              <span class="icon">
+                                <svg height="24" width="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M0 0h24v24H0z" fill="none"></path><path d="M19.35 10.04A7.49 7.49 0 0012 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 000 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z" fill="currentColor"></path></svg>
+                              </span>
+                              <span class="download-link-container">{{ detail.files.downloadLink }}</span>
+                              <span class="text">دانلود</span>
+                            </button>
 
-                            <!-- Progress bar container -->
-                            <div id="progress-container-{{ detail.files.id }}" class="hidden mt-2 w-full">
-                              <div class="flex justify-between text-xs text-gray-500 mb-1">
-                                <span id="percent-{{ detail.files.id }}">0%</span>
-                                <span id="status-{{ detail.files.id }}">در حال آماده‌سازی...</span>
-                              </div>
-                              <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-                                <div id="progress-bar-{{ detail.files.id }}"
-                                     class="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
-                                     style="width: 0%"></div>
-                              </div>
                             </div>
                           </div>
                         {% else %}
@@ -271,105 +260,57 @@
 </div>
 
 <script>
-async function downloadFile(fileId, orderId, fileName) {
-  const url = `/panel/download/${orderId}/${fileId}/`;
-  const percentEl = document.getElementById(`percent-${fileId}`);
-  const progressBar = document.getElementById(`progress-bar-${fileId}`);
-  const statusEl = document.getElementById(`status-${fileId}`);
-  const progressContainer = document.getElementById(`progress-container-${fileId}`);
+document.addEventListener('DOMContentLoaded', function() {
+    const downloadButtons = document.querySelectorAll('.download-btn');
 
-  // نمایش progress bar
-  progressContainer.classList.remove("hidden");
-  percentEl.textContent = "0%";
-  statusEl.textContent = "در حال آماده‌سازی...";
-  progressBar.style.width = "0%";
+    downloadButtons.forEach(button => {
+        button.addEventListener('click', function(event) {
+            event.preventDefault();
 
-  try {
-    const response = await fetch(url);
-    if (!response.ok) {
-      throw new Error("خطا در دانلود فایل");
+            // --- تغییر اصلی اینجاست ---
+            // تگ span مخفی که حاوی لینک است را پیدا کن
+            const linkSpan = this.querySelector('.download-link-container');
+
+            // محتوای متنی آن (لینک) را بخوان و فاصله‌های اضافی را حذف کن
+            const downloadUrl = linkSpan ? linkSpan.textContent.trim() : null;
+
+            if (!downloadUrl) {
+                console.error('Download URL not found inside the hidden span!');
+                return;
+            }
+
+            // بقیه کد برای ایجاد لینک و کلیک روی آن بدون تغییر باقی می‌ماند
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.setAttribute('download', '');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        });
+    });
+});
+
+
+// جلوگیری از راست کلیک
+document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+    alert("امکان راست کلیک غیرفعال است!");
+});
+
+// جلوگیری از کلیدهای رایج DevTools
+document.addEventListener('keydown', function(e) {
+    // F12
+    if (e.key === "F12") {
+        e.preventDefault();
+
     }
-
-    // دریافت نوع فایل از هدر پاسخ
-    const contentType = response.headers.get('content-type') || '';
-    const contentDisposition = response.headers.get('content-disposition') || '';
-
-    // استخراج پسوند فایل از هدر Content-Disposition
-    let fileExtension = '.bin';
-    let finalFileName = fileName;
-
-    // اگر هدر Content-Disposition وجود دارد، نام فایل را از آن استخراج کنید
-    if (contentDisposition) {
-      const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
-      if (filenameMatch && filenameMatch[1]) {
-        finalFileName = filenameMatch[1].replace(/['"]/g, '');
-      }
+    // Ctrl+Shift+I یا Ctrl+Shift+J یا Ctrl+U یا Ctrl+S
+    if ((e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J")) ||
+        (e.ctrlKey && (e.key === "U" || e.key === "S"))) {
+        e.preventDefault();
+       
     }
-
-    // اگر نام فایل پسوند ندارد، بر اساس Content-Type پسوند اضافه کنید
-    if (!finalFileName.includes('.')) {
-      if (contentType.includes('wordprocessingml')) {
-        fileExtension = '.docx';
-      } else if (contentType.includes('pdf')) {
-        fileExtension = '.pdf';
-      } else if (contentType.includes('image')) {
-        fileExtension = '.jpg';
-      } else if (contentType.includes('text')) {
-        fileExtension = '.txt';
-      }
-      finalFileName += fileExtension;
-    }
-
-    const contentLength = response.headers.get("Content-Length");
-    const total = contentLength ? parseInt(contentLength, 10) : 0;
-    let receivedLength = 0;
-    const chunks = [];
-
-    const reader = response.body.getReader();
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-
-      chunks.push(value);
-      receivedLength += value.length;
-
-      // بروزرسانی progress bar
-      if (total) {
-        const percent = Math.round((receivedLength / total) * 100);
-        percentEl.textContent = percent + "%";
-        progressBar.style.width = percent + "%";
-        statusEl.textContent = percent === 100 ? "تکمیل شد" : "در حال دانلود...";
-      }
-    }
-
-    // ایجاد فایل برای دانلود
-    const blob = new Blob(chunks);
-    const downloadUrl = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.style.display = "none";
-    a.href = downloadUrl;
-    a.download = finalFileName;
-    document.body.appendChild(a);
-    a.click();
-
-    // پاکسازی
-    window.URL.revokeObjectURL(downloadUrl);
-    document.body.removeChild(a);
-
-    // مخفی کردن progress bar پس از 2 ثانیه
-    setTimeout(() => {
-      progressContainer.classList.add("hidden");
-    }, 2000);
-
-  } catch (error) {
-    statusEl.textContent = "خطا در دانلود";
-    percentEl.textContent = "0%";
-    progressBar.style.width = "0%";
-    progressBar.classList.add("bg-red-600");
-    console.error("Download error:", error);
-  }
-}
+});
 </script>
 
 <style>
@@ -382,6 +323,10 @@ async function downloadFile(fileId, orderId, fileName) {
 }
 .transition-all {
   transition: all 0.3s ease;
+}
+
+.download-link-container {
+  display: none;
 }
 </style>
 

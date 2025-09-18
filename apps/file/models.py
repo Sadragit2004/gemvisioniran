@@ -41,6 +41,9 @@ class Group(Base):
         verbose_name_plural = "گروه‌های محصول"
 
 
+    def get_absolute_url(self):
+        return reverse("file:filter_shop", kwargs={"slug": self.slug })
+
 # ========================
 # ویژگی
 # ========================

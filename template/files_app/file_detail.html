@@ -375,64 +375,77 @@
                           تضمین سلامت فیزیکی و اصالت کالا
                         </div>
                         <!-- price -->
-                        <div class="mb-6 flex items-center justify-between">
-                          <div
-                            class="flex h-12 w-32 items-center justify-between rounded-lg border px-4 py-1"
-                          >
-                            <button type="button" data-action="increment">
-                              <svg class="h-6 w-6 text-primary">
-                                <use xlink:href="#plus" />
-                              </svg>
-                            </button>
-                            <input
+                    <div class="mb-6 flex items-center justify-between">
+  <!-- Quantity Selector -->
+  <div class="flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-3 py-2 shadow-sm dark:border-gray-600 dark:bg-gray-800">
+    <button type="button" class="qty-btn text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary" data-action="decrement">
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M20 12H4"></path>
+      </svg>
+    </button>
 
-                              id='counter'
-                              value="1"
-                              disabled
-                              type="number"
-                              class="flex h-6 w-6 w-full select-none items-center justify-center bg-transparent text-center outline-none"
-                            />
-                            <button type="button" data-action="decrement">
-                              <svg
-                                class="h-6 w-6 text-red-600 dark:text-red-500"
-                              >
-                                <use xlink:href="#minus" />
-                              </svg>
-                            </button>
-                          </div>
-                          <div class="flex items-center gap-x-1 text-primary">
-                            <div class="flex items-center gap-x-2">
+    <input
+      type="text"
+      value="1"
+      class="qty-input w-12 text-center text-lg font-semibold text-gray-800 outline-none dark:bg-gray-700 dark:text-white"
+      readonly
+    />
 
+    <button type="button" class="qty-btn text-gray-600 hover:text-primary dark:text-gray-300 dark:hover:text-primary" data-action="increment">
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M12 4v16m8-8H4"></path>
+      </svg>
+    </button>
+  </div>
 
-                              <div>
-                                <del
-                                  class="text-sm text-text/60 decoration-warning md:text-base"
-                                >
-                                {{file.price}}
-                                </del>
-                              </div>
-                              <div
-                                class="flex w-10 items-center justify-center rounded-full bg-warning py-0.5 text-sm font-bold text-white dark:bg-red-600"
-                              >
-                              {{file.get_discount_percentage}}%
-                              </div>
+  <!-- Price -->
+  <div class="flex items-center gap-x-1 text-primary">
+    {% if file.price > file.get_price_by_discount %}
+    <div class="flex items-center gap-x-2">
+      <div>
+        <del class="text-sm text-text/60 decoration-warning md:text-base">
+          {{ file.price | intcomma }}
+        </del>
+      </div>
+      <div class="flex w-10 items-center justify-center rounded-full bg-warning py-0.5 text-sm font-bold text-white dark:bg-red-600">
+        {{ file.get_discount_percentage }}%
+      </div>
+    </div>
+    {% endif %}
 
+    <span class="text-xl font-bold">
+      {% if file.price > file.get_price_by_discount %}
+        {{ file.get_price_by_discount | intcomma }}
+      {% else %}
+        {{ file.price | intcomma }}
+      {% endif %}
+    </span>
 
+    <span>تومان</span>
+  </div>
+</div>
 
+<!-- Script -->
+<script>
+  document.querySelectorAll(".qty-btn").forEach(btn => {
+    btn.addEventListener("click", function() {
+      const input = this.parentElement.querySelector(".qty-input");
+      let value = parseInt(input.value) || 1;
 
-                            </div>
+      if (this.dataset.action === "increment") {
+        value++;
+      } else if (this.dataset.action === "decrement" && value > 1) {
+        value--;
+      }
 
+      input.value = value;
+    });
+  });
+</script>
 
-                            <span class="text-xl font-bold">{{file.get_price_by_discount|intcomma}}</span>
-
-
-
-                            <span>تومان</span>
-                          </div>
-                        </div>
                         <!-- add to cart -->
                         <div class="mb-6">
-                          <button onclick='add_to_cart_detail({{file.id}},0)' class="btn-primary w-full py-3">
+                          <button onclick="addToCart({{ file.id }}); showSuccessModal('cartSuccessModal', 'cartSuccessSound');" class="btn-primary w-full py-3">
                             افزودن به سبد خرید
                           </button>
                         </div>
@@ -787,7 +800,7 @@
                 <div class="flex grow">
                   <button
 
-                  onclick='add_to_cart_detail2({{file.id}},0)'
+                  onclick="addToCart({{ file.id }}); showSuccessModal('cartSuccessModal', 'cartSuccessSound');"
                   class="btn-primary w-full px-4 py-3 text-sm">
                     افزودن به سبد خرید
                   </button>
@@ -1660,8 +1673,7 @@ function getCookie(name) {
   return cookieValue;
 }
 
-// تابع تغییر وضعیت علاقه‌مندی
-// تابع تغییر وضعیت علاقه‌مندی
+
 async function toggleFavorite(fileId) {
   const btn = document.getElementById(`favorite-btn-${fileId}`);
   if (!btn) return;

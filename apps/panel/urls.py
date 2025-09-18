@@ -9,6 +9,8 @@ urlpatterns = [
    path('order-list/',views.user_orders_list_view,name='order-list'),
    path('order-list/',views.user_orders_list_view,name='order-list'),
    path('order-detail/<int:order_id>/',views.order_detail_view,name='order-detail'),
-   path('download/<int:order_id>/<int:file_id>/', views.download_file_view, name='download_file'),
+   path('favorites/', views.favorites_list, name='favorites_list'),
+   path('favorites/delete/<int:favorite_id>/', views.delete_favorite, name='delete_favorite'),
+   path('favorites/delete-all/', views.delete_all_favorites, name='delete_all_favorites'),
 
 ]

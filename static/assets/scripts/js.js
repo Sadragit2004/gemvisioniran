@@ -438,3 +438,124 @@ async function addToCart(fileId) {
 }
 
 
+document.addEventListener('DOMContentLoaded', function() {
+    // تابع برای ایجاد تأخیر در درخواست
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+
+    // تابع برای دریافت پیشنهادات
+    function fetchSuggestions(searchTerm, searchType) {
+        if (searchTerm.length < 2) {
+            hideResults(searchType);
+            return;
+        }
+
+        fetch(`/file/search-suggestions/?q=${encodeURIComponent(searchTerm)}`)
+            .then(response => response.json())
+            .then(data => {
+                displayResults(data.suggestions, searchType);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    // تابع برای نمایش نتایج
+    function displayResults(suggestions, searchType) {
+        const resultsContainer = document.getElementById(`${searchType}HeaderSearchResult`);
+        const resultsWrapper = document.getElementById(`${searchType}HeaderSearchResultWrapper`);
+
+        if (!suggestions || suggestions.length === 0) {
+            resultsContainer.classList.add('hidden');
+            return;
+        }
+
+        let html = '<div class="max-h-[450px] overflow-y-auto py-5">';
+
+        suggestions.forEach(item => {
+            html += `
+                <a href="${item.url}" class="flex items-center gap-x-3 p-3 hover:bg-gray-100 dark:hover:bg-gray-700">
+                    ${item.image ?
+                        `<img src="${item.image}" alt="${item.title}" class="w-10 h-10 object-cover rounded">` :
+                        `<div class="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                            <svg class="w-6 h-6 text-gray-400"><use xlink:href="#${item.type === 'file' ? 'file' : 'folder'}"></use></svg>
+                         </div>`
+                    }
+                    <div class="flex-1">
+                        <div class="text-sm font-medium">${item.title}</div>
+                        <div class="text-xs text-gray-500">${item.type === 'file' ? 'فایل' : 'دسته‌بندی'}</div>
+                    </div>
+                </a>
+            `;
+        });
+
+        html += '</div>';
+
+        if (resultsWrapper) {
+            resultsWrapper.innerHTML = html;
+        } else {
+            resultsContainer.innerHTML = html;
+        }
+
+        resultsContainer.classList.remove('hidden');
+    }
+
+    // تابع برای مخفی کردن نتایج
+    function hideResults(searchType) {
+        const resultsContainer = document.getElementById(`${searchType}HeaderSearchResult`);
+        resultsContainer.classList.add('hidden');
+    }
+
+    // تنظیمات برای جستجوی دسکتاپ
+    const desktopSearch = document.getElementById('desktopHeaderSearch');
+    if (desktopSearch) {
+        const debouncedDesktopSearch = debounce(function() {
+            fetchSuggestions(this.value, 'desktop');
+        }, 300);
+
+        desktopSearch.addEventListener('input', debouncedDesktopSearch);
+        desktopSearch.addEventListener('focus', function() {
+            if (this.value.length >= 2) {
+                fetchSuggestions(this.value, 'desktop');
+            }
+        });
+
+        // مخفی کردن نتایج هنگام کلیک خارج
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#desktopHeaderSearchBase')) {
+                hideResults('desktop');
+            }
+        });
+    }
+
+    // تنظیمات برای جستجوی موبایل
+    const mobileSearch = document.getElementById('mobileHeaderSearch');
+    if (mobileSearch) {
+        const debouncedMobileSearch = debounce(function() {
+            fetchSuggestions(this.value, 'mobile');
+        }, 300);
+
+        mobileSearch.addEventListener('input', debouncedMobileSearch);
+        mobileSearch.addEventListener('focus', function() {
+            if (this.value.length >= 2) {
+                fetchSuggestions(this.value, 'mobile');
+            }
+        });
+
+        // مخفی کردن نتایج هنگام کلیک خارج
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#mobileHeaderSearchBase')) {
+                hideResults('mobile');
+            }
+        });
+    }
+});

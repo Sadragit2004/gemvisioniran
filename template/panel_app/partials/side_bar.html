@@ -40,7 +40,7 @@
             </a>
           </li>
           <li>
-            <a href=""
+            <a href="{% url 'panel:favorites_list' %}"
                class="profile-menu flex items-center justify-between rounded-lg px-2 py-4 xl:px-4 {% if request.resolver_match.view_name == 'panel:favorites' %}profile-menu-active{% endif %}">
               <div class="flex items-center gap-x-4">
                 <svg class="h-6 w-6"><use xlink:href="#heart" /></svg>

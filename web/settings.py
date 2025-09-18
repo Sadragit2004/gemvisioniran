@@ -201,3 +201,15 @@ CKEDITOR_CONFIGS = {
                 ],'extraPlugins':','.join(['codesnippet',])
          }
 }
+
+# settings.py
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    },
+    'tokens': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'token-cache',
+    }
+}
