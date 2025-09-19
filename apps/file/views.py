@@ -13,7 +13,7 @@ import json
 from django.views import View
 from django.template.loader import render_to_string
 from .filters import ProductFilter
-
+from apps.discount.models import Discount_detail
 
 def file_list_view(request, template_name, order_by_field):
     files = File.objects.filter(isActive=True).order_by(order_by_field)[:10]
@@ -33,6 +33,14 @@ def rich_groups(request):
     return render(request, "files_app/rich_groups.html", {"groups": groups})
 
 
+
+
+
+def speciel_sale(request):
+
+
+    basket_things = Discount_detail.objects.all()
+    return render(request,'files_app/special_sale.html',{'baskets':basket_things})
 
 
 def file_group_view(request):

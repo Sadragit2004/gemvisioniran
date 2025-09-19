@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from django.utils import timezone
 import uuid
-
+from datetime import date
 # =========================
 # Custom User Manager
 # =========================
@@ -56,6 +56,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     )
     gender = models.CharField(max_length=10, choices=GENDER_CHOICES, default="True")
 
+    birth_date = models.DateField(null=True, blank=True, verbose_name="تاریخ تولد")
     is_admin = models.BooleanField(default=False, verbose_name='ادمین اختصاصی')
     is_active = models.BooleanField(default=False, verbose_name="فعال/غیرفعال")
     is_staff = models.BooleanField(default=False, verbose_name="کارمند (دسترسی ادمین)")
@@ -69,6 +70,12 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return f"{self.mobileNumber} - {self.name or ''} {self.family or ''}"
 
+    @property
+    def age(self):
+        if self.birth_date:
+            today = date.today()
+            return today.year - self.birth_date.year - ((today.month, today.day) < (self.birth_date.month, self.birth_date.day))
+        return None
 
 # =========================
 # User Security Model

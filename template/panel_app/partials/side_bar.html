@@ -48,38 +48,9 @@
               </div>
             </a>
           </li>
-          <li>
-            <a href=""
-               class="profile-menu flex items-center justify-between rounded-lg px-2 py-4 xl:px-4 {% if request.resolver_match.view_name == 'panel:messages' %}profile-menu-active{% endif %}">
-              <div class="flex items-center gap-x-4">
-                <svg class="h-6 w-6"><use xlink:href="#notification" /></svg>
-                <div>پیام ها</div>
-              </div>
-              {% if len_not_seen > 0 %}
-              <div class="flex h-6 w-6 items-center justify-center rounded-lg bg-primary text-sm font-bold text-white dark:bg-emerald-600">
-                {{ len_not_seen }}
-              </div>
-              {% endif %}
-            </a>
-          </li>
-          <li>
-            <a href=""
-                class="profile-menu flex items-center justify-between rounded-lg px-2 py-4 xl:px-4 {% if request.resolver_match.view_name == 'panel:addresses' %}profile-menu-active{% endif %}">
-                <div class="flex items-center gap-x-4">
-                    <svg class="h-6 w-6"><use xlink:href="#address" /></svg>
-                    <div>آدرس ها</div>
-                </div>
-            </a>
-          </li>
-          <li>
-            <a href=""
-               class="profile-menu flex items-center justify-between rounded-lg px-2 py-4 xl:px-4 {% if request.resolver_match.view_name == 'panel:account-info' %}profile-menu-active{% endif %}">
-              <div class="flex items-center gap-x-4">
-                <svg class="h-6 w-6"><use xlink:href="#user-setting" /></svg>
-                <div>اطلاعات حساب کاربری</div>
-              </div>
-            </a>
-          </li>
+
+
+     
 
           {% if user.is_superuser %}
           <li>

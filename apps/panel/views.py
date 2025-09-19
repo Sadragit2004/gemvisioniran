@@ -165,3 +165,73 @@ def delete_all_favorites(request):
         return redirect('favorites_list')
 
     return JsonResponse({'status': 'error', 'message': 'درخواست نامعتبر'})
+
+
+
+from django.shortcuts import render, get_object_or_404, redirect
+from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
+from apps.user.models import CustomUser
+from .forms import EditProfileForm
+
+class Edit_profile(LoginRequiredMixin, View):
+
+    def get(self, request, *args, **kwargs):
+        user = get_object_or_404(CustomUser, id=request.user.id)
+
+
+
+        initial_data = {
+            'name': user.name,
+            'family': user.family,
+            'email': user.email,
+            'gender': user.gender,
+            'birth_date': user.birth_date,
+        }
+
+        form = EditProfileForm(initial=initial_data)
+
+        return render(request, 'panel_app/edit_profile.html', {
+            'user': user,
+            'customer': user,
+            'form': form
+        })
+
+    def post(self, request, *args, **kwargs):
+        user = get_object_or_404(CustomUser, id=request.user.id)
+        form = EditProfileForm(request.POST)
+        if form.is_valid():
+            has_changes = False
+
+            if form.cleaned_data['name']:
+                user.name = form.cleaned_data['name']
+                has_changes = True
+
+            if form.cleaned_data['family']:
+                user.family = form.cleaned_data['family']
+                has_changes = True
+
+            if form.cleaned_data['gender']:
+                user.gender = form.cleaned_data['gender']
+                has_changes = True
+
+            if form.cleaned_data['birth_date']:
+                user.birth_date = form.cleaned_data['birth_date']
+                has_changes = True
+
+            if has_changes:
+                user.save()
+            else:
+        # هیچ فیلدی پر نشده بود
+                print("هیچ داده‌ای برای ذخیره‌سازی وجود ندارد")
+
+            messages.success(request,'اطلاعات شما با موفقیت ویرایش شد','success')
+            return redirect('panel:edit_profile')
+
+
+        return render(request, 'panel_app/edit_profile.html', {
+            'user': user,
+            'customer': user,
+            'form': form
+        })

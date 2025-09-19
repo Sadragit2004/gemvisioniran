@@ -23,7 +23,7 @@
               <!-- image -->
                               <!-- image -->
               <div class="mb-2 md:mb-5" draggable="false">
-                <a href="" aria-label="{{file.image}}">
+                <a  href="{% url 'file:file_detail' slug=file.slug %}" aria-label="{{file.image}}">
                   <img
                     alt="{{file.title}}"
                     class="mx-auto w-32 sm:w-40 md:w-48 lg:w-auto rounded-lg"
@@ -37,7 +37,7 @@
               <div class="mb-2">
                 <a
                   class="line-clamp-2 h-10 text-sm md:h-12 md:text-base"
-                  href=""
+                  href="{% url 'file:file_detail' slug=file.slug %}"
                   aria-label="{{file.title}}"
                 >
                 {{file.title}}
