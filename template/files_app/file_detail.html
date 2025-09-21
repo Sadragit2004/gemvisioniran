@@ -9,20 +9,69 @@
 
 {% block meta1 %}
 
-  <meta name="description" content="{{meta_tags.description}}">
-  <meta name="keywords" content="{{meta_tags.keyword_list}}">
-    <meta name="robots" content="index, follow">
-
+  <title>قیمت {{file.title}}</title>
+  <meta name="description" content="{{file.short_description}}">
+  <meta name="robots" content="index, follow">
   <meta property="og:type" content="product">
-  <meta property="og:title" content="{{meta_tags.og_title}}">
-  <meta property="og:description" content="{{meta_tags.description}}">
-  <meta property="og:image" content="{{ media_url }}{{ file.image_name }}">
+  <meta property="og:title" content="قیمت {{file.title}}">
+  <meta property="og:description" content="{{file.short_description}}">
+  <meta property="og:image" content="{{ media_url }}{{ file.image }}">
   <meta property="og:url" content="{{file.get_absolute_url}}">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="{{meta_tags.og_title}}">
-  <meta name="twitter:description" content="{{meta_tags.description}}">
-  <meta name="twitter:image" content="{{ media_url }}{{ file.image_name }}">
-  <link rel="canonical" href="{{file.get_absolute_url}}">
+  <meta name="twitter:title" content="{{file.title}}">
+  <meta name="twitter:description" content="{{file.short_description}}">
+  <meta name="twitter:image" content="{{ media_url }}{{ file.image }}">
+  <meta property="product:price:amount" content="{{ file.get_price_by_discount }}">
+  <meta property="product:price:currency" content="IRR">
+
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "{{ file.title }}",
+ "image": ["{{ file.image.url }}"]
+  "description": "{{ file.short_description }}",
+  "sku": "{{ file.id }}",
+  "mpn": "{{ file.id }}",
+  "brand": {
+    "@type": "Brand",
+    "name": "جم ویژن ایران"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ request.build_absolute_uri}}",
+    "priceCurrency": "IRR",
+    "price": "{{ file.get_price_by_discount }}",
+    "availability": "https://schema.org/InStock",
+    "itemCondition": "https://schema.org/NewCondition"
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{% with likes=file.comment_product.all|length %}{{likes}}{% endwith %}",
+    "reviewCount": "{{ file.comment_product.count }}"
+  },
+  "review": [
+    {% for comment in file.comment_product.all %}
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "{{ comment.user.name }} {{ comment.user.family }}"
+      },
+      "datePublished": "{{ comment.register_date|date:'Y-m-d' }}",
+      "reviewBody": "{{ comment.text|truncatechars:200 }}",
+      "reviewRating": {
+        "@type": "Rating",
+        "ratingValue": "5",
+        "bestRating": "5",
+        "worstRating": "1"
+      }
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
 
 {% endblock meta1 %}
 
@@ -51,7 +100,7 @@
                       href="{% url 'main:index' %}"
                       class="text-sm text-text/90 hover: hover:"
                     >
-                      کتابوو
+                    صفحه اصلی سایت
                     </a>
                     <span class="text-text/90">
                       <svg class="h-5 w-5">
@@ -60,8 +109,12 @@
                     </span>
                   </li>
                   <li class="flex items-center gap-x-2">
-                    {% comment %} <a href="{% url 'page:book_page' slug=file.brand.slug %}" class="text-sm text-text/90 hover: hover:">
-                      <a href="{% url 'page:book_page' slug=file.brand.slug %}"> {{file.brand}} </a> {% endcomment %}
+
+                    {% for g in file.group.all %}
+
+                    <a href="{% url 'file:filter_shop' slug=g.slug %}"><span>{{g.title}}</span></a>
+
+                    {% endfor %}
 
                     </a>
                     <span class="text-text/90">
@@ -498,7 +551,7 @@
               <div
                 class="flex items-center gap-x-1 text-sm font-light text-primary sm:text-base md:text-base"
               >
-                <a href="{% url 'main:index' %}"> کتابوو </a>
+                <a href="{% url 'main:index' %}">   </a>
                 <svg class="h-5 w-5">
                   <use xlink:href="#chevron-left" />
                 </svg>
@@ -1044,9 +1097,9 @@
             {% endif %}
 
             <div class="flex-grow space-y-2">
-                <h5 style='color:gray;' class="text-sm leading-relaxed">
+                <span style='color:gray;' class="text-sm leading-relaxed">
                     {{ comment.user }}
-                </h5>
+                </span>
                 <p class="line-clamp-4 text-sm leading-relaxed text-text/90">
                     {{ comment.text }}
                 </p>
@@ -1217,9 +1270,9 @@
           <div class="rounded-lg border p-6 bg-white dark:bg-gray-800 shadow-sm">
             <!-- نام و دکمه پاسخ -->
             <div class="flex items-center justify-between mb-4">
-              <h5 class="text-base font-semibold text-text">
+              <span class="text-base font-semibold text-text">
                 {{ comment.user.name }} {{ comment.user.family }}
-              </h5>
+              </span>
               <button
                 type="button"
                 class="btn-secondary-nobg text-sm"
@@ -1415,9 +1468,9 @@
                 </div>
                 <!-- Comment -->
                 <div class="flex-grow space-y-2">
-                  <h5 class="text-sm leading-relaxed">
+                  <span class="text-sm leading-relaxed">
                    {{comment.user.name}} {{comment.user.family}}
-                  </h5>
+                  </span>
                   <p class="line-clamp-4 text-sm leading-relaxed text-text/90">
                     {{comment.text}}
                   </p>

@@ -55,6 +55,22 @@ def file_group_view(request):
 
 
 
+
+def best_selling_files(request):
+
+    files = (
+        File.objects.annotate(order_count=Count('orders_details_file'))
+        .filter(order_count__gt=0)
+        .order_by('-order_count')[:10]
+    )
+
+    context = {
+        'files': files
+    }
+    return render(request, 'files_app/best_selling_files.html', context)
+
+
+
 @cache_page(0 * 0)
 def file_detail(request, slug):
     file_obj = get_object_or_404(File, slug=slug, isActive=True)

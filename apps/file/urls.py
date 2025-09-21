@@ -1,11 +1,12 @@
 from django.urls import path
-from .views import speciel_sale,file_group_view,group_in_category,related_products,file_detail,latest_files,save_comment,expensive_files,rich_groups,show_by_filter,get_feature_filter
+from .views import best_selling_files,speciel_sale,file_group_view,group_in_category,related_products,file_detail,latest_files,save_comment,expensive_files,rich_groups,show_by_filter,get_feature_filter
 
 app_name = "files"
 
 urlpatterns = [
     path("latest/", latest_files, name="latest_files"),
     path("expensive/", expensive_files, name="expensive_files"),
+    path("best_selling_files/", best_selling_files, name="best_selling"),
     path("rich-groups/", rich_groups, name="rich_groups"),
     path('<slug:slug>/', file_detail, name='file_detail'),
     path('comment/save-comment/', save_comment, name='save_comment'),

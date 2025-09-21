@@ -56,7 +56,7 @@ class Feature(Base):
         verbose_name = "ویژگی"
         verbose_name_plural = "ویژگی‌ها"
 
-
+from django.utils.html import strip_tags
 # ========================
 # فایل (محصول)
 # ========================
@@ -74,6 +74,15 @@ class File(Base):
     class Meta:
         verbose_name = "فایل"
         verbose_name_plural = "فایل‌ها"
+
+
+    def short_description(self):
+        if self.description:
+            clean_text = strip_tags(self.description)
+            return clean_text[:150]
+        return ""
+
+
 
 
     def get_absolute_url(self):

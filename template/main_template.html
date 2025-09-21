@@ -28,25 +28,9 @@
 
     <meta property="og:locale" content="fa_IR" />
     <meta property="og:type" content="website" />
-      {% if request.path == "/" %}
-
-
-
-
-       {% else %}
-
 
           {% block meta1 %}
           {% endblock meta1 %}
-
-      {% endif %}
-      {% if request.path == "/" %}
-
-
-      {% else %}
-          {% block json %}
-          {% endblock json %}
-      {% endif %}
 
 
       <link href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/14.6.3/nouislider.min.css" rel="stylesheet">

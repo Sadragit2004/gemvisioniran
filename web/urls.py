@@ -29,5 +29,6 @@ urlpatterns = [
     path('discounts/',include('apps.discount.urls',namespace='discount')),
     path('peyment/',include('apps.peyment.urls',namespace='peyment')),
     path('panel/',include('apps.panel.urls',namespace='panel')),
-    path('search/',include('apps.search.urls',namespace='search'))
+    path('search/',include('apps.search.urls',namespace='search')),
+    path('',include('apps.blog.urls',namespace='blog')),
 ]+static(sett.MEDIA_URL,document_root = sett.MEDIA_ROOT)

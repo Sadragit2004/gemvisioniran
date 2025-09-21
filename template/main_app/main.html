@@ -2,6 +2,25 @@
 {% load render_partial %}
 
 
+{% block meta1 %}
+
+  <meta name="description" content="{{meta_tags.description}}">
+  <meta name="keywords" content="{{meta_tags.keyword_list}}">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="{{meta_tags.og_title}}">
+  <meta property="og:description" content="{{meta_tags.description}}">
+  <meta property="og:image" content="{{ media_url }}{{ file.image_name }}">
+  <meta property="og:url" content="{{file.get_absolute_url}}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{meta_tags.og_title}}">
+  <meta name="twitter:description" content="{{meta_tags.description}}">
+  <meta name="twitter:image" content="{{ media_url }}{{ file.image_name }}">
+  <link rel="canonical" href="{{file.get_absolute_url}}">
+
+{% endblock meta1 %}
+
 {% block content %}
 
 
@@ -58,31 +77,10 @@
       <div id="special-products">
         {% render_partial 'file:special' %}
       </div>
+      {% render_partial 'file:best_selling' %}
 
+ {% render_partial 'blog:show_blog' %}
 
-{% comment %}
-        <!-- Newest Products section Start -->
-        {% render_partial 'product:recent' %}
-        <!-- Newest Products section End -->
-
-        <!-- Category Banners section Start -->
-        {% render_partial 'main:main_slider' %}
-        <!-- Category Banners section End -->
-
-        <!-- Category section Start -->
-        {% render_partial 'product:popular_group' %}
-        <!-- Category section End -->
-
-        <!-- Special Products section Start -->
-        {% render_partial 'product:top' %}
-
-        <!-- Special Products section End -->
-
-        <!-- Blog section Start -->
-        {% render_partial 'blog:show_blog' %}
-
-
-        <!-- Blog section End --> {% endcomment %}
 
 
       </main>
