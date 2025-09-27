@@ -3,38 +3,54 @@
 {% load render_partial %}
 
 
-{% block title1 %}
-
-{{meta_tags.title_header}}
-
-{% endblock title1 %}
-
-
 
 {% block meta1 %}
 
-    <meta name="description" content="{{meta_tags.description}}">
+  <title>دسته بندی {{group.title}}</title>
+  <meta name="description" content="{{group.short_description}}">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="دسته بندی {{group.title}}">
+  <meta property="og:description" content="{{group.short_description}}">
+  <meta property="og:image" content="{{ media_url }}{{ group.image }}">
+  <meta property="og:url" content="{{group.get_absolute_url}}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{group.title}}">
+  <meta name="twitter:description" content="{{group.short_description}}">
+  <meta name="twitter:image" content="{{ media_url }}{{ group.image }}">
+  <meta property="product:price:amount" content="{{ group.get_price_by_discount }}">
+  <meta property="product:price:currency" content="IRR">
 
-    <meta name="keywords" content="{{meta_tags.description}} ">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "دسته بندی {{ group.title }}",
+  "description": "{{ group.short_description|striptags }}",
+  "url": "{{ request.build_absolute_uri }}",
+  "image": "{{ media_url }}{{ group.image }}",
+  "numberOfItems": {{ files|length }},
+  "itemListElement": [
+    {% for file in files %}
+    {
+      "@type": "ListItem",
+      "position": {{ forloop.counter }},
+      "url": "{% url 'file:file_detail' slug=file.slug %}",
+      "name": "{{ file.title }}",
+      "image": "{{ media_url }}{{ file.image }}",
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "IRR",
+        "price": "{% if file.price > file.get_price_by_discount %}{{ file.get_price_by_discount }}{% else %}{{ file.price }}{% endif %}",
+        "availability": "http://schema.org/InStock",
+        "url": "{% url 'file:file_detail' slug=file.slug %}"
+      }
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
 
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <link rel="canonical" href="{{ request.build_absolute_uri }}">
-
-    <meta name="robots" content="index, follow">
-
-    <meta property="og:title" content="{{meta_tags.og_title}}">
-    <meta property="og:description" content="{{meta_tags.description}}">
-    <meta property="og:image" content="{{ media_url }}{{ group.image }}">
-    <meta property="og:url" content="{{ request.build_absolute_uri }}">
-    <meta property="og:type" content="website">
-    <meta property="og:locale" content="fa_IR">
-
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{meta_tags.og_title}}">
-    <meta name="twitter:description" content="{{meta_tags.description}}">
-    <meta name="twitter:image" content="{{ media_url }}{{ group.image }}">
 
 {% endblock meta1 %}
 

@@ -41,6 +41,12 @@ class Group(Base):
         verbose_name_plural = "گروه‌های محصول"
 
 
+    def short_description(self):
+        if self.description:
+            clean_text = strip_tags(self.description)
+            return clean_text[:150]
+        return ""
+
     def get_absolute_url(self):
         return reverse("file:filter_shop", kwargs={"slug": self.slug })
 

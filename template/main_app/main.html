@@ -66,20 +66,22 @@
         <!-- Special Products section Start -->
 
 
-
+ {% render_partial 'file:rich_groups' %}
 
       {% render_partial 'file:latest_files' %}
-      {% render_partial 'file:expensive_files' %}
-      {% render_partial 'file:rich_groups' %}
+     
+
         <!-- Special Products section End -->
 
 
-      <div id="special-products">
-        {% render_partial 'file:special' %}
-      </div>
+
       {% render_partial 'file:best_selling' %}
 
- {% render_partial 'blog:show_blog' %}
+         <div id="special-products">
+        {% render_partial 'file:special' %}
+      </div>
+
+     {% render_partial 'blog:show_blog' %}
 
 
 

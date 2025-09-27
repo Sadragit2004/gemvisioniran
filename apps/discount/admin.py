@@ -33,9 +33,9 @@ class DiscountBasketAdmin(admin.ModelAdmin):
         discount_basket = queryset.first()
 
         # اضافه کردن تمام محصولات به سبد تخفیف
-        files = file.objects.all()
+        files = File.objects.all()
         for file in files:
-            Discount_detail.objects.get_or_create(discount_basket=discount_basket, file=file)
+            Discount_detail.objects.get_or_create(discountBasket=discount_basket, files=file)
 
         self.message_user(request, "تمام محصولات به سبد تخفیف اضافه شدند")
 

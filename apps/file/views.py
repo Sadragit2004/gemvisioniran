@@ -29,7 +29,7 @@ def expensive_files(request):
 
 
 def rich_groups(request):
-    groups = Group.objects.annotate(file_count=Count("files_of_groups")).order_by("-file_count")[:10]
+    groups = Group.objects.annotate(file_count=Count("files_of_groups")).order_by("-file_count")[:8]
     return render(request, "files_app/rich_groups.html", {"groups": groups})
 
 
