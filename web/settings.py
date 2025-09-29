@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'apps.peyment.apps.PeymentConfig',
     'apps.panel.apps.PanelConfig',
     'apps.blog.apps.BlogConfig',
+    'apps.course.apps.CourseConfig'
 ]
 
 MIDDLEWARE = [
@@ -92,7 +93,7 @@ WSGI_APPLICATION = 'web.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'mysql.connector.django',
-        'NAME':'gemvision',
+        'NAME':'gem',
         'USER':'root',
         'PASSWORD':'sadra1383@gmail.com',
         'HOST':'localhost',

@@ -31,4 +31,5 @@ urlpatterns = [
     path('panel/',include('apps.panel.urls',namespace='panel')),
     path('search/',include('apps.search.urls',namespace='search')),
     path('',include('apps.blog.urls',namespace='blog')),
+    path('course/',include('apps.course.urls',namespace='course'))
 ]+static(sett.MEDIA_URL,document_root = sett.MEDIA_ROOT)
