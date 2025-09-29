@@ -622,6 +622,143 @@
                 margin-bottom: 15px;
             }
         }
+
+
+        .curriculum-section {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+    color: #333;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 0.5rem;
+}
+
+.video-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.video-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #eaeaea;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.video-item:hover {
+    border-color: #007bff;
+    box-shadow: 0 2px 8px rgba(0,123,255,0.1);
+}
+
+.video-thumbnail {
+    width: 80px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 1rem;
+    flex-shrink: 0;
+}
+
+.video-counter {
+    color: white;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.video-info {
+    flex-grow: 1;
+}
+
+.video-title {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+    color: #333;
+}
+
+.video-link {
+    color: inherit;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.video-link:hover {
+    color: #007bff;
+}
+
+.video-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.video-duration {
+    background: #f8f9fa;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #666;
+    margin-left: 0.5rem;
+}
+
+.video-price {
+    background: #fff3cd;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #856404;
+}
+
+.video-action {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+}
+
+.watch-btn {
+    background: #28a745;
+    color: white;
+}
+
+.watch-btn:hover {
+    background: #218838;
+    transform: translateY(-1px);
+}
+
+.video-action.free {
+    background: #17a2b8;
+    color: white;
+}
+
+.video-action.free:hover {
+    background: #138496;
+    transform: translateY(-1px);
+}
+
+.video-action.disabled {
+    background: #6c757d;
+    color: white;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
     </style>
 </head>
 <body>
@@ -740,35 +877,59 @@
 
         <!-- Curriculum Section -->
         <section class="curriculum-section">
-            <h2 class="section-title">سرفصل دوره ({{ videos.count }} درس)</h2>
-            <div class="video-list">
-                {% for video in videos %}
-                <div class="video-item">
-                    <div class="video-thumbnail">
-                        <span class="video-counter">درس {{ forloop.counter }}</span>
-                    </div>
-                    <div class="video-info">
-                        <h3 class="video-title">{{ video.videoName }}</h3>
-                        <div class="video-meta">
-                            <div>
-                                <span class="video-duration">{{ video.durationMinutes }} دقیقه</span>
-                                {% if video.price > 0 %}
-                                    <span class="video-price">{{ video.price }} تومان</span>
-                                {% endif %}
-                            </div>
-                            {% if video.isPay or video.price == 0 %}
-                                <button class="video-action {% if video.price == 0 %}free{% endif %}">
-                                    {% if video.price == 0 %}رایگان{% else %}ثبت نام درس{% endif %}
-                                </button>
-                            {% else %}
-                                <button class="video-action disabled" disabled>قفل شده</button>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-                {% endfor %}
+    <h2 class="section-title">سرفصل دوره ({{ videos.count }} درس)</h2>
+    <div class="video-list">
+        {% for video in videos %}
+        <div class="video-item">
+            <div class="video-thumbnail">
+                <span class="video-counter">درس {{ forloop.counter }}</span>
             </div>
-        </section>
+            <div class="video-info">
+                <h3 class="video-title">
+                    {% if video.isPay and video.link %}
+                        <a href="{{ video.link }}" class="video-link" target="_blank">
+                            {{ video.videoName }}
+                        </a>
+                    {% else %}
+                        {{ video.videoName }}
+                    {% endif %}
+                </h3>
+                <div class="video-meta">
+                    <div>
+                        <span class="video-duration">{{ video.durationMinutes }} دقیقه</span>
+                        {% if video.price > 0 %}
+                            <span class="video-price">{{ video.price }} تومان</span>
+                        {% endif %}
+                    </div>
+                    {% if video.isPay %}
+                        {% if video.link %}
+                            <a href="{{ video.link }}" class="video-action watch-btn" target="_blank">
+                                مشاهده ویدیو
+                            </a>
+                        {% else %}
+                            <button class="video-action disabled" disabled>
+                                لینک موجود نیست
+                            </button>
+                        {% endif %}
+                    {% elif video.price == 0 %}
+                        {% if video.link %}
+                            <a href="{{ video.link }}" class="video-action free watch-btn" target="_blank">
+                                مشاهده ویدیو
+                            </a>
+                        {% else %}
+                            <button class="video-action free" disabled>
+                                لینک موجود نیست
+                            </button>
+                        {% endif %}
+                    {% else %}
+                        <button class="video-action disabled" disabled>قفل شده</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
 
         <!-- Description Section -->
         <section class="description-section">
