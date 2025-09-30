@@ -4,9 +4,8 @@ import json
 import requests
 from django.views import View
 from django.contrib import messages
-
-# from apps.order.models import Status_Order
-from apps.order.models import Order,OrderStatus
+from apps.order.models import Order, OrderStatus
+from apps.course.models import Enrollment  # اضافه کردن این import
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.core.exceptions import ObjectDoesNotExist
@@ -14,13 +13,9 @@ from django.conf import settings
 from apps.peyment.models import Peyment
 from apps.user.models import CustomUser
 import utils
-# # Create your views here.
-
-
-
 
 from .zarinpal import ZarinPal
-from django.http import HttpResponse
+from django.http import JsonResponse
 
 ZP_API_REQUEST = "https://api.zarinpal.com/pg/v4/payment/request.json"
 ZP_API_VERIFY = "https://api.zarinpal.com/pg/v4/payment/verify.json"
@@ -81,8 +76,6 @@ def verify(request):
             return HttpResponse(f'تراکنش ناموفق بوده است یا توسط کاربر لغو شده است'
                                 f'Error Message: {response.get("message")}')
 
-from django.http import JsonResponse
-
 class Zarin_pal_view_verfiy(LoginRequiredMixin, View):
     def get(self, request):
         t_status = request.GET.get('Status')
@@ -107,24 +100,30 @@ class Zarin_pal_view_verfiy(LoginRequiredMixin, View):
             if len(req.json()['errors']) == 0:
                 t_status = req.json()['data']['code']
                 if t_status == 100:
-
+                    # پرداخت موفق - بروزرسانی وضعیت سفارش و enrollment
                     order.isFinally = True
                     order.status = OrderStatus.CONFIRMED
+                    order.save()
+
+                    # بروزرسانی وضعیت enrollment مربوط به این سفارش
+                    self.update_enrollment_status(order)
 
                     peyment.isFinaly = True
                     peyment.statusCode = t_status
                     peyment.refId = str(req.json()['data']['refId'])
                     peyment.save()
-                    order.save()
-
-
 
                     return redirect('peyment:show_sucess', 'کد رهگیری شما : {}'.format(str(req.json()['data']['refId'])))
 
 
                 elif t_status == 101:
+                    # پرداخت تکراری - بروزرسانی وضعیت
                     order.isFinally = True
                     order.save()
+
+                    # بروزرسانی وضعیت enrollment مربوط به این سفارش
+                    self.update_enrollment_status(order)
+
                     peyment.isFinaly = True
                     peyment.statusCode = t_status
                     peyment.refId = str(req.json()['data']['refId'])
@@ -147,11 +146,26 @@ class Zarin_pal_view_verfiy(LoginRequiredMixin, View):
             order.save()
             return redirect('peyment:show_verfiy_unmessage','پرداخت توسط کاربر لغو شد')
 
+    def update_enrollment_status(self, order):
+        """
+        بروزرسانی وضعیت isPay در Enrollment مربوط به این سفارش
+        """
+        try:
+            # پیدا کردن OrderDetail مربوط به این سفارش که enrollment دارد
+            order_details = order.orders_details.filter(enrollment__isnull=False)
+
+            for order_detail in order_details:
+                if order_detail.enrollment:
+                    # بروزرسانی وضعیت پرداخت در Enrollment
+                    order_detail.enrollment.isPay = True
+                    order_detail.enrollment.save()
+                    print(f"Enrollment {order_detail.enrollment.id} updated to isPay=True")
+
+        except Exception as e:
+            print(f"Error updating enrollment status: {e}")
 
 def show_verfiy_message(request,message):
-
     order = Order.objects.all()
-
     return render(request,'peyment_app/peyment.html',{'message':message,'orders':order})
 
 def show_verfiy_unmessage(request,message):

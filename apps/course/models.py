@@ -48,9 +48,8 @@ class Course(TimeStampedModel):
     fileImage = utils.FileUpload('course', 'Course')
     image = models.ImageField(upload_to=fileImage.upload_to, blank=True, null=True)
     slug = models.SlugField(unique=True, blank=True)
-    cachedPrice = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
+    cachedPrice = models.PositiveIntegerField(
+       
         default=0,
         blank=True
     )

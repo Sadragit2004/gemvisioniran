@@ -48,7 +48,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.db.models import Avg, Count
 import json
 from .models import Course, Video, CourseComment, CourseRating, CourseCategoryRelation, Enrollment, InstructorProfile
-
 def course_detail(request, slug):
     course = get_object_or_404(Course, slug=slug)
 
@@ -88,13 +87,14 @@ def course_detail(request, slug):
             pass
 
     # بررسی آیا کاربر در دوره ثبت نام کرده
+    enrollment = None
     is_enrolled = False
     if request.user.is_authenticated:
-        is_enrolled = Enrollment.objects.filter(
+        enrollment = Enrollment.objects.filter(
             user=request.user,
-            course=course,
-            isActive=True
-        ).exists()
+            course=course
+        ).first()
+        is_enrolled = enrollment is not None
 
     context = {
         'course': course,
@@ -108,6 +108,7 @@ def course_detail(request, slug):
         'total_ratings': rating_stats['total_ratings'] or 0,
         'user_rating': user_rating.rating if user_rating else None,
         'is_enrolled': is_enrolled,
+        'enrollment': enrollment,  # اضافه شده
         'student_count': course.studentCount,
         'total_hours': course.totalHoursHuman,
     }
@@ -186,9 +187,6 @@ def submit_comment(request, course_id):
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
 
-
-
-
 from django.shortcuts import get_object_or_404
 from django.http import JsonResponse
 from django.views import View
@@ -196,8 +194,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from .models import Enrollment, Course
 from apps.user.models import CustomUser
-from apps.order.models import Order,OrderDetail
-
+from apps.order.models import Order, OrderDetail
 
 class CourseEnrollmentView(LoginRequiredMixin, View):
     def post(self, request, course_id):
@@ -220,10 +217,16 @@ class CourseEnrollmentView(LoginRequiredMixin, View):
                 ).first()
 
                 if existing_enrollment:
-                    return JsonResponse({
-                        'success': False,
-                        'message': 'شما قبلاً در این دوره ثبت نام کرده‌اید'
-                    }, status=400)
+                    if existing_enrollment.isPay:
+                        return JsonResponse({
+                            'success': False,
+                            'message': 'شما قبلاً در این دوره ثبت نام کرده‌اید'
+                        }, status=400)
+                    else:
+                        return JsonResponse({
+                            'success': False,
+                            'message': 'شما قبلاً ثبت نام کرده‌اید اما پرداخت انجام نشده است'
+                        }, status=400)
 
                 # ایجاد Enrollment با isPay=False
                 enrollment = Enrollment.objects.create(
@@ -239,7 +242,6 @@ class CourseEnrollmentView(LoginRequiredMixin, View):
                     isFinally=False,
                     discount=0,
                     description=f'ثبت نام در دوره {course.courseName}',
-                    
                 )
 
                 # ایجاد OrderDetail
@@ -249,11 +251,22 @@ class CourseEnrollmentView(LoginRequiredMixin, View):
                     price=int(course.totalPrice * 10)  # تبدیل به تومان
                 )
 
+                # محاسبه اطلاعات مالی
+                course_price = int(course.totalPrice * 10)  # قیمت دوره به تومان
+                tax_rate = 9  # 9 درصد مالیات
+                tax_amount = int(course_price * tax_rate / 100)
+                total_amount = course_price + tax_amount
+
                 return JsonResponse({
                     'success': True,
-                    'message': 'ثبت نام با موفقیت انجام شد',
+                    'message': 'ثبت نام با موفقیت انجام شد. لطفاً پرداخت را تکمیل کنید.',
                     'enrollment_id': str(enrollment.id),
-                    'order_code': str(order.orderCode)
+                    'order_code': str(order.orderCode),
+                    'order_id': str(order.id),
+                    'course_price': course_price,
+                    'tax_amount': tax_amount,
+                    'total_amount': total_amount,
+                    'payment_required': True
                 })
 
         except Exception as e:

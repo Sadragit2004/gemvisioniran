@@ -1,6 +1,5 @@
 {% extends "course_template.html" %}
-
-
+{% load humanize %}
 {% block content %}
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -164,7 +163,17 @@
             cursor: not-allowed;
         }
 
-        .btn:hover:not(.btn-disabled) {
+        .btn-warning {
+            background-color: #ffc107;
+            color: #212529;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: not-allowed;
+        }
+
+        .btn:hover:not(.btn-disabled):not(.btn-warning) {
             opacity: 0.9;
             transform: translateY(-2px);
         }
@@ -665,6 +674,62 @@
             transform: translateY(-2px);
         }
 
+        /* Payment Summary Styles */
+        .payment-summary {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .payment-row:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
+        .payment-label {
+            color: #6c757d;
+        }
+
+        .payment-value {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .payment-total {
+            color: #2ecc71;
+            font-weight: bold;
+        }
+
+        .payment-btn {
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .payment-btn:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .course-header {
@@ -695,141 +760,163 @@
             }
         }
 
-
         .curriculum-section {
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
 
-.section-title {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-    color: #333;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 0.5rem;
-}
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #333;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 0.5rem;
+        }
 
-.video-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
+        .video-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
 
-.video-item {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    border: 1px solid #eaeaea;
+        .video-item {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border: 1px solid #eaeaea;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .video-item:hover {
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.1);
+        }
+
+        .video-thumbnail {
+            width: 80px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 1rem;
+            flex-shrink: 0;
+        }
+
+        .video-counter {
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .video-info {
+            flex-grow: 1;
+        }
+
+        .video-title {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .video-link {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .video-link:hover {
+            color: #007bff;
+        }
+
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .video-duration {
+            background: #f8f9fa;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #666;
+            margin-left: 0.5rem;
+        }
+
+        .video-price {
+            background: #fff3cd;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #856404;
+        }
+
+        .video-action {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .watch-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .watch-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .video-action.free {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .video-action.free:hover {
+            background: #138496;
+            transform: translateY(-1px);
+        }
+
+        .video-action.disabled {
+            background: #6c757d;
+            color: white;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .transfer-message {
+    background-color: #e3f2fd;
+    color: #1976d2;
+    padding: 10px 15px;
     border-radius: 6px;
-    transition: all 0.3s ease;
-}
-
-.video-item:hover {
-    border-color: #007bff;
-    box-shadow: 0 2px 8px rgba(0,123,255,0.1);
-}
-
-.video-thumbnail {
-    width: 80px;
-    height: 60px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 1rem;
-    flex-shrink: 0;
-}
-
-.video-counter {
-    color: white;
-    font-weight: bold;
-    font-size: 0.9rem;
-}
-
-.video-info {
-    flex-grow: 1;
-}
-
-.video-title {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.1rem;
-    color: #333;
-}
-
-.video-link {
-    color: inherit;
-    text-decoration: none;
-    transition: color 0.2s;
-}
-
-.video-link:hover {
-    color: #007bff;
-}
-
-.video-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.video-duration {
-    background: #f8f9fa;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    color: #666;
-    margin-left: 0.5rem;
-}
-
-.video-price {
-    background: #fff3cd;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    color: #856404;
-}
-
-.video-action {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    display: inline-block;
+    margin: 15px 0;
     text-align: center;
+    font-weight: 500;
+    border: 1px solid #bbdefb;
 }
 
-.watch-btn {
-    background: #28a745;
-    color: white;
+.loading-dots {
+    display: inline-block;
+    animation: dots 1.5s steps(5, end) infinite;
 }
 
-.watch-btn:hover {
-    background: #218838;
-    transform: translateY(-1px);
-}
-
-.video-action.free {
-    background: #17a2b8;
-    color: white;
-}
-
-.video-action.free:hover {
-    background: #138496;
-    transform: translateY(-1px);
-}
-
-.video-action.disabled {
-    background: #6c757d;
-    color: white;
-    cursor: not-allowed;
-    opacity: 0.6;
+@keyframes dots {
+    0%, 20% { color: rgba(25, 118, 210, 0); }
+    40% { color: rgba(25, 118, 210, 0.5); }
+    60% { color: rgba(25, 118, 210, 0.75); }
+    80%, 100% { color: rgba(25, 118, 210, 1); }
 }
     </style>
 </head>
@@ -845,6 +932,31 @@
                 <button class="modal-btn confirm" id="confirmEnrollment">بله، ثبت نام کن</button>
                 <button class="modal-btn cancel" id="cancelEnrollment">انصراف</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Modal for Payment -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal-content">
+            <h2 class="modal-title">پرداخت دوره</h2>
+            <div class="payment-summary">
+                <div class="payment-row">
+                    <span class="payment-label">مبلغ دوره:</span>
+                    <span class="payment-value" id="coursePrice">0 تومان</span>
+                </div>
+                <div class="payment-row">
+                    <span class="payment-label">مالیات (9%):</span>
+                    <span class="payment-value" id="taxAmount">0 تومان</span>
+                </div>
+                <div class="payment-row">
+                    <span class="payment-label">جمع کل:</span>
+                    <span class="payment-value payment-total" id="totalAmount">0 تومان</span>
+                </div>
+            </div>
+            <p style="margin: 15px 0; color: #6c757d; font-size: 14px;">
+                پرداخت نهایی
+            </p>
+            <a href="#" class="payment-btn" id="finalPaymentBtn">پرداخت نهایی</a>
         </div>
     </div>
 
@@ -908,7 +1020,7 @@
 
                 <div class="price-section">
                     {% if course.totalPrice > 0 %}
-                        <div class="course-price">{{ course.totalPrice }} تومان</div>
+                        <div class="course-price">{{ course.totalPrice|intcomma }} تومان</div>
                     {% else %}
                         <div class="free-badge">رایگان</div>
                     {% endif %}
@@ -917,7 +1029,11 @@
                 <div class="action-buttons">
                     <button class="btn btn-primary">مشاوره رایگان</button>
                     {% if is_enrolled %}
-                        <button class="btn btn-disabled" disabled>شما ثبت نام کرده‌اید</button>
+                        {% if enrollment.isPay %}
+                            <button class="btn btn-disabled" disabled>شما ثبت نام کرده‌اید</button>
+                        {% else %}
+                            <button class="btn btn-warning" disabled>ثبت نام شده - پرداخت نشده</button>
+                        {% endif %}
                     {% else %}
                         <button class="btn btn-secondary" id="enrollButton">ثبت نام دوره</button>
                     {% endif %}
@@ -925,6 +1041,7 @@
             </div>
         </section>
 
+        <!-- بقیه بخش‌های تمپلیت بدون تغییر -->
         <!-- Rating Section -->
         <section class="rating-section">
             <h3 class="rating-title">امتیاز دهید به این دوره</h3>
@@ -963,59 +1080,59 @@
 
         <!-- Curriculum Section -->
         <section class="curriculum-section">
-    <h2 class="section-title">سرفصل دوره ({{ videos.count }} درس)</h2>
-    <div class="video-list">
-        {% for video in videos %}
-        <div class="video-item">
-            <div class="video-thumbnail">
-                <span class="video-counter">درس {{ forloop.counter }}</span>
-            </div>
-            <div class="video-info">
-                <h3 class="video-title">
-                    {% if video.isPay and video.link %}
-                        <a href="{{ video.link }}" class="video-link" target="_blank">
-                            {{ video.videoName }}
-                        </a>
-                    {% else %}
-                        {{ video.videoName }}
-                    {% endif %}
-                </h3>
-                <div class="video-meta">
-                    <div>
-                        <span class="video-duration">{{ video.durationMinutes }} دقیقه</span>
-                        {% if video.price > 0 %}
-                            <span class="video-price">{{ video.price }} تومان</span>
-                        {% endif %}
+            <h2 class="section-title">سرفصل دوره ({{ videos.count }} درس)</h2>
+            <div class="video-list">
+                {% for video in videos %}
+                <div class="video-item">
+                    <div class="video-thumbnail">
+                        <span class="video-counter">درس {{ forloop.counter }}</span>
                     </div>
-                    {% if video.isPay %}
-                        {% if video.link %}
-                            <a href="{{ video.link }}" class="video-action watch-btn" target="_blank">
-                                مشاهده ویدیو
-                            </a>
-                        {% else %}
-                            <button class="video-action disabled" disabled>
-                                لینک موجود نیست
-                            </button>
-                        {% endif %}
-                    {% elif video.price == 0 %}
-                        {% if video.link %}
-                            <a href="{{ video.link }}" class="video-action free watch-btn" target="_blank">
-                                مشاهده ویدیو
-                            </a>
-                        {% else %}
-                            <button class="video-action free" disabled>
-                                لینک موجود نیست
-                            </button>
-                        {% endif %}
-                    {% else %}
-                        <button class="video-action disabled" disabled>قفل شده</button>
-                    {% endif %}
+                    <div class="video-info">
+                        <h3 class="video-title">
+                            {% if video.isPay and video.link %}
+                                <a href="{{ video.link }}" class="video-link" target="_blank">
+                                    {{ video.videoName }}
+                                </a>
+                            {% else %}
+                                {{ video.videoName }}
+                            {% endif %}
+                        </h3>
+                        <div class="video-meta">
+                            <div>
+                                <span class="video-duration">{{ video.durationMinutes }} دقیقه</span>
+                                {% if video.price > 0 %}
+                                    <span class="video-price">{{ video.price }} تومان</span>
+                                {% endif %}
+                            </div>
+                            {% if video.isPay %}
+                                {% if video.link %}
+                                    <a href="{{ video.link }}" class="video-action watch-btn" target="_blank">
+                                        مشاهده ویدیو
+                                    </a>
+                                {% else %}
+                                    <button class="video-action disabled" disabled>
+                                        لینک موجود نیست
+                                    </button>
+                                {% endif %}
+                            {% elif video.price == 0 %}
+                                {% if video.link %}
+                                    <a href="{{ video.link }}" class="video-action free watch-btn" target="_blank">
+                                        مشاهده ویدیو
+                                    </a>
+                                {% else %}
+                                    <button class="video-action free" disabled>
+                                        لینک موجود نیست
+                                    </button>
+                                {% endif %}
+                            {% else %}
+                                <button class="video-action disabled" disabled>قفل شده</button>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
-        </div>
-        {% endfor %}
-    </div>
-</section>
+        </section>
 
         <!-- Description Section -->
         <section class="description-section">
@@ -1151,117 +1268,187 @@
 
     <script>
         // CSRF Token for AJAX requests
-
-    // CSRF Token for AJAX requests
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
                 }
             }
+            return cookieValue;
         }
-        return cookieValue;
-    }
 
-    const csrftoken = getCookie('csrftoken');
+        const csrftoken = getCookie('csrftoken');
 
-    // Enrollment System
-    const enrollButton = document.getElementById('enrollButton');
-    const enrollmentModal = document.getElementById('enrollmentModal');
-    const confirmEnrollment = document.getElementById('confirmEnrollment');
-    const cancelEnrollment = document.getElementById('cancelEnrollment');
-    const courseNameModal = document.getElementById('courseNameModal');
-
-    if (enrollButton) {
-        enrollButton.addEventListener('click', function() {
-            // بررسی لاگین بودن کاربر
-            const isAuthenticated = {{ request.user.is_authenticated|yesno:"true,false" }};
-
-            if (!isAuthenticated) {
-                showMessage('لطفا ابتدا وارد حساب کاربری خود شوید', 'error');
-                return;
-            }
-
-            // نمایش پاپ‌آپ تأیید
-            enrollmentModal.style.display = 'flex';
-        });
-    }
-
-    confirmEnrollment.addEventListener('click', function() {
-        enrollInCourse();
-    });
-
-    cancelEnrollment.addEventListener('click', function() {
-        enrollmentModal.style.display = 'none';
-    });
-
-    // Close modal when clicking outside
-    enrollmentModal.addEventListener('click', function(e) {
-        if (e.target === enrollmentModal) {
-            enrollmentModal.style.display = 'none';
-        }
-    });
-
-    function enrollInCourse() {
+        // Enrollment System
         const enrollButton = document.getElementById('enrollButton');
+        const enrollmentModal = document.getElementById('enrollmentModal');
+        const paymentModal = document.getElementById('paymentModal');
+        const confirmEnrollment = document.getElementById('confirmEnrollment');
+        const cancelEnrollment = document.getElementById('cancelEnrollment');
+        const finalPaymentBtn = document.getElementById('finalPaymentBtn');
+        const courseNameModal = document.getElementById('courseNameModal');
 
-        // Disable button and show loading
-        enrollButton.disabled = true;
-        enrollButton.textContent = 'در حال ثبت نام...';
-        enrollmentModal.style.display = 'none';
+        // Payment elements
+        const coursePriceElement = document.getElementById('coursePrice');
+        const taxAmountElement = document.getElementById('taxAmount');
+        const totalAmountElement = document.getElementById('totalAmount');
 
-        fetch(`/course/enroll/{{ course.id }}/`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': csrftoken
+        let currentOrderId = null;
+
+        if (enrollButton) {
+            enrollButton.addEventListener('click', function() {
+                // بررسی لاگین بودن کاربر
+                const isAuthenticated = {{ request.user.is_authenticated|yesno:"true,false" }};
+
+                if (!isAuthenticated) {
+                    showMessage('لطفا ابتدا وارد حساب کاربری خود شوید', 'error');
+                    return;
+                }
+
+                // نمایش پاپ‌آپ تأیید
+                enrollmentModal.style.display = 'flex';
+            });
+        }
+
+        confirmEnrollment.addEventListener('click', function() {
+            enrollInCourse();
+        });
+
+        cancelEnrollment.addEventListener('click', function() {
+            enrollmentModal.style.display = 'none';
+        });
+
+        finalPaymentBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (currentOrderId) {
+                window.location.href = `/peyment/request/${currentOrderId}/`;
             }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                showMessage('ثبت نام با موفقیت انجام شد!', 'success');
+        });
 
-                // Update button state
+        // Close modal when clicking outside
+        enrollmentModal.addEventListener('click', function(e) {
+            if (e.target === enrollmentModal) {
+                enrollmentModal.style.display = 'none';
+            }
+        });
+
+        paymentModal.addEventListener('click', function(e) {
+            if (e.target === paymentModal) {
+                paymentModal.style.display = 'none';
+            }
+        });
+
+        function enrollInCourse() {
+    const enrollButton = document.getElementById('enrollButton');
+
+    // Disable button and show loading
+    enrollButton.disabled = true;
+    enrollButton.textContent = 'در حال ثبت نام...';
+    enrollmentModal.style.display = 'none';
+
+    fetch(`/course/enroll/{{ course.id }}/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.payment_required) {
+                showMessage('ثبت نام با موفقیت انجام شد. در حال انتقال به فاکتور...', 'success');
+
+                // Update button state to "ثبت نام شده - پرداخت نشده"
+                enrollButton.textContent = 'ثبت نام شده - پرداخت نشده';
+                enrollButton.classList.remove('btn-secondary');
+                enrollButton.classList.add('btn-warning');
+                enrollButton.disabled = true;
+
+                // ذخیره order_id برای استفاده بعدی
+                currentOrderId = data.order_id;
+
+                // نمایش مودال پرداخت بعد از 3 ثانیه با پیام انتقال
+                setTimeout(() => {
+                    showPaymentModal(data);
+                }, 3000);
+
+            } else {
+                showMessage('ثبت نام با موفقیت انجام شد!', 'success');
                 enrollButton.textContent = 'شما ثبت نام کرده‌اید';
                 enrollButton.classList.remove('btn-secondary');
                 enrollButton.classList.add('btn-disabled');
                 enrollButton.disabled = true;
-
-                // Redirect to order page after 2 seconds
-                setTimeout(() => {
-                    if (data.order_code) {
-                        window.location.href = `/orders/${data.order_code}/`;
-                    }
-                }, 2000);
-            } else {
-                showMessage(data.message, 'error');
-                enrollButton.disabled = false;
-                enrollButton.textContent = 'ثبت نام دوره';
-
-                // اگر کاربر مربی باشد، دکمه را غیرفعال کن
-                if (data.message && data.message.includes('مربی')) {
-                    enrollButton.disabled = true;
-                    enrollButton.textContent = 'ثبت نام امکان‌پذیر نیست';
-                    enrollButton.classList.remove('btn-secondary');
-                    enrollButton.classList.add('btn-disabled');
-                }
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showMessage('خطا در ارتباط با سرور', 'error');
+        } else {
+            showMessage(data.message, 'error');
             enrollButton.disabled = false;
             enrollButton.textContent = 'ثبت نام دوره';
-        });
-    }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showMessage('خطا در ارتباط با سرور', 'error');
+        enrollButton.disabled = false;
+        enrollButton.textContent = 'ثبت نام دوره';
+    });
+}
 
+       function showPaymentModal(data) {
+    // پر کردن اطلاعات پرداخت
+    coursePriceElement.textContent = formatPrice(data.course_price) + ' تومان';
+    taxAmountElement.textContent = formatPrice(data.tax_amount) + ' تومان';
+    totalAmountElement.textContent = formatPrice(data.total_amount) + ' تومان';
 
+    // آپدیت لینک پرداخت
+    finalPaymentBtn.href = `/payment/request/${data.order_id}/`;
+
+    // ایجاد پیام انتقال
+    const transferMessage = document.createElement('div');
+    transferMessage.className = 'transfer-message';
+    transferMessage.innerHTML = 'در حال انتقال به صفحه فاکتور<span class="loading-dots">...</span>';
+
+    // پیدا کردن محل مناسب برای قرار دادن پیام
+    const paymentBtn = document.getElementById('finalPaymentBtn');
+    const modalContent = paymentModal.querySelector('.modal-content');
+
+    // قرار دادن پیام قبل از دکمه پرداخت
+    modalContent.insertBefore(transferMessage, paymentBtn.nextSibling);
+
+    // نمایش مودال پرداخت
+    paymentModal.style.display = 'flex';
+
+    // شمارش معکوس برای انتقال خودکار
+    let countdown = 5;
+    const countdownInterval = setInterval(() => {
+        countdown--;
+        transferMessage.innerHTML = `در حال انتقال به صفحه فاکتور (${countdown} ثانیه)<span class="loading-dots">...</span>`;
+
+        if (countdown <= 0) {
+            clearInterval(countdownInterval);
+            if (currentOrderId) {
+                window.location.href = `/peyment/request/${currentOrderId}/`;
+            }
+        }
+    }, 1000);
+
+    // متوقف کردن انتقال خودکار اگر کاربر روی دکمه پرداخت کلیک کرد
+    finalPaymentBtn.addEventListener('click', function(e) {
+        clearInterval(countdownInterval);
+    });
+}
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('fa-IR').format(price);
+        }
+
+        // بقیه توابع JavaScript بدون تغییر
         // Toggle description text
         document.getElementById('toggleDescription').addEventListener('click', function() {
             const descriptionText = document.getElementById('descriptionText');
