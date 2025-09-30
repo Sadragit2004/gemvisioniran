@@ -13,7 +13,7 @@ def main_course(request):
     # کوئری پایه برای جلوگیری از تکرار کد
     base_qs = Course.objects.prefetch_related(
         'enrollments', 'ratings', 'comments', 'videos'
-    ).filter(isPay=True) # برای مثال، فقط دوره‌های فعال را نشان می‌دهیم
+    ) # برای مثال، فقط دوره‌های فعال را نشان می‌دهیم
 
     # 1. تهیه لیست "جدیدترین" دوره‌ها
     # دوره‌ها بر اساس تاریخ ایجاد مرتب شده و ۸ مورد اول انتخاب می‌شوند.
@@ -185,3 +185,79 @@ def submit_comment(request, course_id):
 
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+
+
+
+
+from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from django.views import View
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db import transaction
+from .models import Enrollment, Course
+from apps.user.models import CustomUser
+from apps.order.models import Order,OrderDetail
+
+
+class CourseEnrollmentView(LoginRequiredMixin, View):
+    def post(self, request, course_id):
+        # بررسی اینکه کاربر مربی نباشد
+        if hasattr(request.user, 'instructorProfile'):
+            return JsonResponse({
+                'success': False,
+                'message': 'مربیان نمی‌توانند در دوره‌ها ثبت نام کنند'
+            }, status=403)
+
+        try:
+            with transaction.atomic():
+                # دریافت دوره
+                course = get_object_or_404(Course, id=course_id)
+
+                # بررسی آیا کاربر قبلاً ثبت نام کرده است
+                existing_enrollment = Enrollment.objects.filter(
+                    user=request.user,
+                    course=course
+                ).first()
+
+                if existing_enrollment:
+                    return JsonResponse({
+                        'success': False,
+                        'message': 'شما قبلاً در این دوره ثبت نام کرده‌اید'
+                    }, status=400)
+
+                # ایجاد Enrollment با isPay=False
+                enrollment = Enrollment.objects.create(
+                    user=request.user,
+                    course=course,
+                    isActive=True,
+                    isPay=False
+                )
+
+                # ایجاد Order
+                order = Order.objects.create(
+                    user=request.user,
+                    isFinally=False,
+                    discount=0,
+                    description=f'ثبت نام در دوره {course.courseName}',
+                    
+                )
+
+                # ایجاد OrderDetail
+                order_detail = OrderDetail.objects.create(
+                    order=order,
+                    enrollment=enrollment,
+                    price=int(course.totalPrice * 10)  # تبدیل به تومان
+                )
+
+                return JsonResponse({
+                    'success': True,
+                    'message': 'ثبت نام با موفقیت انجام شد',
+                    'enrollment_id': str(enrollment.id),
+                    'order_code': str(order.orderCode)
+                })
+
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'message': f'خطا در ثبت نام: {str(e)}'
+            }, status=500)

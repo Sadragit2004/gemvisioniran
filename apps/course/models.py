@@ -54,7 +54,7 @@ class Course(TimeStampedModel):
         default=0,
         blank=True
     )
-    isPay = models.BooleanField(default=False, verbose_name='پرداخت شده')
+    # isPay = models.BooleanField(default=False, verbose_name='پرداخت شده')
 
     def save(self, *args, **kwargs):
         if not self.slug and self.courseName:
@@ -110,7 +110,7 @@ class Course(TimeStampedModel):
         indexes = [
             models.Index(fields=['slug']),
             models.Index(fields=['instructor']),
-            models.Index(fields=['isPay']),
+
         ]
 
 # ======================================================================
@@ -164,7 +164,7 @@ class Enrollment(TimeStampedModel):
     )
     isActive = models.BooleanField(default=True)
     enrolledAt = models.DateTimeField(auto_now_add=True)
-
+    isPay = models.BooleanField(default=False, verbose_name='پرداخت شده')
     class Meta:
         unique_together = ("user", "course")
         indexes = [

@@ -12,6 +12,7 @@ import pytz
 from apps.user.models import CustomUser
 from django.utils.translation import gettext_lazy as _
 import utils
+from apps.course.models import Enrollment
 
 class Base(models.Model):
 
@@ -89,9 +90,14 @@ class Order(Base):
     def get_order_total_price(self):
         sum = 0
         for item in self.orders_details.all():
-            sum+=item.files.get_price_by_discount()
-        finaly_total_price,tax = utils.price_by_delivery_tax(sum,self.discount)
-        return int(finaly_total_price*10)
+            # اگر فایل دارد
+            if item.files:
+                sum += item.files.get_price_by_discount()
+            # اگر دوره دارد
+            elif item.enrollment:
+                sum += item.enrollment.course.totalPrice
+        finaly_total_price, tax = utils.price_by_delivery_tax(sum, self.discount)
+        return int(finaly_total_price * 10)
 
 
 
@@ -103,7 +109,12 @@ class Order(Base):
     # قیمت کل سفارش قبل از تخفیف
         initial_total_price = 0
         for item in self.orders_details.all():
-            initial_total_price += item.files.price
+            # اگر فایل دارد
+            if item.files:
+                initial_total_price += item.files.price
+            # اگر دوره دارد
+            elif item.enrollment:
+                initial_total_price += item.enrollment.course.totalPrice
 
         # قیمت کل سفارش بعد از تخفیف
         finaly_total_price, tax = utils.price_by_delivery_tax(initial_total_price, self.discount)
@@ -147,8 +158,9 @@ class Order(Base):
 
 class OrderDetail(models.Model):
     order = models.ForeignKey(Order,on_delete=models.CASCADE,related_name='orders_details',verbose_name='سفارش')
-    files = models.ForeignKey(File,on_delete=models.CASCADE,verbose_name='محصول',related_name='orders_details_file')
+    files = models.ForeignKey(File,on_delete=models.CASCADE,verbose_name='محصول',related_name='orders_details_file',blank=True,null=True)
     price = models.IntegerField(verbose_name='قیمت کالا در فاکتور')
+    enrollment = models.ForeignKey(Enrollment,on_delete=models.CASCADE,verbose_name='دوره',null=True,blank=True)
 
 
 

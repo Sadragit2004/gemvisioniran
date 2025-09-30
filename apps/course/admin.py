@@ -74,10 +74,10 @@ class CourseAdmin(admin.ModelAdmin):
         'student_count',
         'average_rating_display',
         'duration_display',
-        'is_pay_display',
+
         'created_at'
     ]
-    list_filter = ['isPay', 'createdAt', 'instructor']
+    list_filter = ['createdAt', 'instructor']
     search_fields = ['courseName', 'description', 'instructor__username']
     readonly_fields = ['id', 'slug', 'createdAt', 'updatedAt']
     inlines = [VideoInline, EnrollmentInline, CourseCommentInline, CourseRatingInline, CourseCategoryRelationInline]
@@ -104,11 +104,7 @@ class CourseAdmin(admin.ModelAdmin):
         return obj.totalHoursHuman
     duration_display.short_description = 'مدت زمان'
 
-    def is_pay_display(self, obj):
-        if obj.isPay:
-            return "پرداختی"
-        return "رایگان"
-    is_pay_display.short_description = 'نوع دوره'
+
 
     def created_at(self, obj):
         return obj.createdAt.strftime("%Y/%m/%d")
@@ -122,11 +118,10 @@ class VideoAdmin(admin.ModelAdmin):
         'course',
         'duration_display',
         'price_display',
-        'is_pay_display',
         'order',
         'created_at'
     ]
-    list_filter = ['isPay', 'course', 'createdAt']
+    list_filter = ['course', 'createdAt']
     search_fields = ['videoName', 'course__courseName']
     readonly_fields = ['id', 'createdAt', 'updatedAt']
     list_editable = ['order']
@@ -141,11 +136,6 @@ class VideoAdmin(admin.ModelAdmin):
         return "رایگان"
     price_display.short_description = 'قیمت'
 
-    def is_pay_display(self, obj):
-        if obj.isPay:
-            return "پرداختی"
-        return "رایگان"
-    is_pay_display.short_description = 'نوع'
 
     def created_at(self, obj):
         return obj.createdAt.strftime("%Y/%m/%d")

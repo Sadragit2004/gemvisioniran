@@ -119,7 +119,6 @@ class Zarin_pal_view_verfiy(LoginRequiredMixin, View):
 
 
 
-
                     return redirect('peyment:show_sucess', 'کد رهگیری شما : {}'.format(str(req.json()['data']['refId'])))
 
 
