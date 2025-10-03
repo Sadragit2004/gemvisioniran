@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'apps.peyment.apps.PeymentConfig',
     'apps.panel.apps.PanelConfig',
     'apps.blog.apps.BlogConfig',
-    'apps.course.apps.CourseConfig'
+    'apps.course.apps.CourseConfig',
+    'apps.ticket.apps.TicketConfig',
 ]
 
 MIDDLEWARE = [

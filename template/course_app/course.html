@@ -1,5 +1,28 @@
 {% extends "course_template.html" %}
 
+
+
+{% block meta1 %}
+
+<title>مرجع فروش فایل سه بعدی</title>
+  <meta name="description" content="بهترین فروشگاه فایل سه بعدی در ایران">
+  <meta name="keywords" content="{{meta_tags.keyword_list}}">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:type" content="product">
+  <meta property="og:title" content="{{meta_tags.og_title}}">
+  <meta property="og:description" content="{{meta_tags.description}}">
+  <meta property="og:image" content="{{ media_url }}{{ file.image_name }}">
+  <meta property="og:url" content="{{file.get_absolute_url}}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{meta_tags.og_title}}">
+  <meta name="twitter:description" content="{{meta_tags.description}}">
+  <meta name="twitter:image" content="{{ media_url }}{{ file.image_name }}">
+  <link rel="canonical" href="{{file.get_absolute_url}}">
+
+{% endblock meta1 %}
+
+
 {% block content %}
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -37,7 +60,7 @@
                             <img src="{% if course.instructor.instructorProfile.image %}{{ course.instructor.instructorProfile.image.url }}{% else %}https://via.placeholder.com/30/4285f4/ffffff?text=P{% endif %}" alt="{{ course.instructor.get_full_name|default:course.instructor.name }}" class="instructor-img">
                             <span class="instructor-name">{{ course.instructor.get_full_name|default:course.instructor.name }}</span>
                         </div>
-                        <h3 class="course-title">{{ course.courseName }}</h3>
+                       <a href="{% url 'course:detail' course.slug %}"> <h3 class="course-title">{{ course.courseName }}</h3></a>
                         <div class="course-meta">
                             <span class="duration"><i class="far fa-clock"></i> {{ course.totalHoursHuman }}</span>
                             <span class="rating">

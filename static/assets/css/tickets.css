@@ -1,0 +1,100 @@
+/* static/css/tickets.css */
+.ticket-system {
+    font-family: 'Vazir', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* استایل‌های چت */
+.chat-container {
+    max-height: 500px;
+    overflow-y: auto;
+    padding: 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    background-color: #fafafa;
+}
+
+.chat-message {
+    margin-bottom: 20px;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.user-message .message-body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 18px 18px 0 18px;
+    margin-left: 20%;
+}
+
+.admin-message .message-body {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border-radius: 18px 18px 18px 0;
+    margin-right: 20%;
+}
+
+.message-header {
+    font-size: 0.85rem;
+}
+
+/* استایل‌های badge سفارشی */
+.badge-priority-high {
+    background: linear-gradient(45deg, #ff416c, #ff4b2b);
+}
+
+.badge-priority-medium {
+    background: linear-gradient(45deg, #ffb347, #ffcc33);
+}
+
+.badge-priority-low {
+    background: linear-gradient(45deg, #2193b0, #6dd5ed);
+}
+
+/* انیمیشن‌ها */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* استایل‌های responsive */
+@media (max-width: 768px) {
+    .user-message .message-body,
+    .admin-message .message-body {
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+    .chat-container {
+        max-height: 400px;
+    }
+}
+
+/* استایل‌های کارت‌های آمار */
+.stats-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: none;
+    border-radius: 15px;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* استایل‌های دکمه‌ها */
+.btn-ticket {
+    border-radius: 25px;
+    padding: 8px 20px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-ticket-primary {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    border: none;
+    color: white;
+}
+
+.btn-ticket-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}

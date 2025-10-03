@@ -101,38 +101,27 @@
           >
             <div class="col-span-6 flex flex-col gap-y-6">
               <p class="select-none text-lg"> </p>
-              <ul class="space-y-4 text-text/60">
 
-                <li>
-                  <a
-                    class="py-2 hover:text-primary hover:"
-                    href=""
-                  >
-                    راهنمای خرید
-                  </a>
-                </li>
-
-
-
-                <li>
-
-                  <a
-                    class="py-2 hover:text-primary hover:"
-                    href=""
-                  >
-                    چت با پشتیبانی
-
-                  </a>
-                </li>
-              </ul>
             </div>
             <div class="col-span-6 flex flex-col gap-y-6">
               <p class="select-none text-lg">دسترسی سریع</p>
               <ul class="space-y-4 text-text/60">
+
+
+                <li>
+
+                  <a
+                    class="py-2 hover:text-primary hover:"
+                    href="{% url 'ticket:create_ticket' %}"
+                  >
+                  تیکت پشتیبانی
+
+                  </a>
+                </li>
                 <li>
                   <a
                     class="py-2 hover:text-primary hover:"
-                    href=""
+                    href="{% url 'panel:order-list' %}"
                   >
                     پیگیری سفارشات
                   </a>
@@ -140,7 +129,7 @@
                 <li>
                   <a
                     class="py-2 hover:text-primary hover:"
-                    href=""
+                    href="/call"
                   >
                     تماس با ما
                   </a>
@@ -148,7 +137,7 @@
                 <li>
                   <a
                     class="py-2 hover:text-primary hover:"
-                    href=""
+                    href="/faq"
                   >
                     سوالات متداول
                   </a>
@@ -156,7 +145,7 @@
                 <li>
                   <a
                     class="py-2 hover:text-primary hover:"
-                    href=""
+                    href="/about"
                   >
                     درباره ما
                   </a>

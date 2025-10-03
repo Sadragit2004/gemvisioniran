@@ -19,31 +19,33 @@ from django.http import JsonResponse
 # ======================
 def send_mobile(request):
     next_url = request.GET.get("next")  # گرفتن next از url
+
     if request.method == "POST":
         form = MobileForm(request.POST)
         if form.is_valid():
             mobile = form.cleaned_data['mobileNumber']
 
-            # بررسی وجود کاربر
+            # بررسی وجود کاربر یا ساخت
             user, created = CustomUser.objects.get_or_create(mobileNumber=mobile)
 
             if created:
-                user.isActive = False
+                user.is_active = False
                 user.save()
-                UserSecurity.objects.create(user=user)
+
+            # مطمئن شو UserSecurity همیشه وجود داره
+            security, _ = UserSecurity.objects.get_or_create(user=user)
 
             # تولید کد تأیید
             code = utils.create_random_code(5)
             expire_time = timezone.now() + timedelta(minutes=2)
 
-            security = user.security
             security.activeCode = code
             security.expireCode = expire_time
             security.isBan = False
             security.save()
 
             # TODO: ارسال SMS
-            print(f"کد تأیید برای {mobile}: {code}")
+            print(f"📲 کد تأیید برای {mobile}: {code}")
 
             # ذخیره شماره موبایل و next در سشن
             request.session["mobileNumber"] = mobile
@@ -63,7 +65,7 @@ def send_mobile(request):
 # ======================
 def verify_code(request):
     mobile = request.session.get("mobileNumber")
-    next_url = request.session.get("next_url")  # گرفتن next از سشن
+    next_url = request.session.get("next_url")
 
     if not mobile:
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
@@ -72,7 +74,7 @@ def verify_code(request):
 
     try:
         user = CustomUser.objects.get(mobileNumber=mobile)
-        security = user.security
+        security, _ = UserSecurity.objects.get_or_create(user=user)  # تضمین وجود
     except CustomUser.DoesNotExist:
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({'success': False, 'message': 'کاربری با این شماره موبایل یافت نشد'})
@@ -80,7 +82,7 @@ def verify_code(request):
         return redirect("account:send_mobile")
 
     if request.method == "POST":
-        # بررسی ارسال مجدد
+        # ارسال مجدد کد
         if "resend" in request.POST and request.POST["resend"] == "true":
             code = utils.create_random_code(5)
             expire_time = timezone.now() + timedelta(minutes=2)
@@ -98,17 +100,17 @@ def verify_code(request):
             messages.success(request, "کد جدید ارسال شد ✅")
             return redirect("account:verify_code")
 
-        # بررسی کد
+        # بررسی کد ارسالی
         form = VerificationCodeForm(request.POST)
         if form.is_valid():
             code = form.cleaned_data['activeCode']
 
-            # بررسی تاریخ انقضا
+            # انقضا
             if security.expireCode and security.expireCode < timezone.now():
                 messages.error(request, "⏳ کد منقضی شده است، دوباره تلاش کنید.")
                 return redirect("account:send_mobile")
 
-            # بررسی صحت کد
+            # صحت کد
             if security.activeCode != code:
                 messages.error(request, "❌ کد تأیید اشتباه است.")
             else:
@@ -123,11 +125,7 @@ def verify_code(request):
                 login(request, user)
                 messages.success(request, "✅ ورود موفقیت‌آمیز بود.")
 
-                # اگر next_url موجود بود برو همونجا
-                if next_url:
-                    return redirect(next_url)
-
-                return redirect("main:index")
+                return redirect(next_url or "main:index")
 
     else:
         form = VerificationCodeForm()
@@ -135,6 +133,9 @@ def verify_code(request):
     return render(request, "user_app/verify_otp.html", {"form": form, "mobile": mobile})
 
 
+# ======================
+# خروج از حساب
+# ======================
 def user_logout(request):
     logout(request)
     messages.success(request, "✅ شما با موفقیت از حساب کاربری خارج شدید.")

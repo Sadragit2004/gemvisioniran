@@ -62,13 +62,12 @@
                     </p>
                     {% endif %}
                   </div>
-                  <a onclick="addToCart({{ file.id }}); showSuccessModal('cartSuccessModal', 'cartSuccessSound');"
-                    <span class="cursor-pointer">
-                      <svg class="h-6 w-6">
+                  <button type="button" onclick="addToCart({{ file.id }}); showSuccessModal('cartSuccessModal', 'cartSuccessSound');"
+                        class="cursor-pointer">
+                    <svg class="h-6 w-6">
                         <use xlink:href="#cart" />
-                      </svg>
-                    </span>
-                  </a>
+                    </svg>
+                </button>
                   <!-- New price -->
                   <div class="text-sm font-bold text-primary md:text-base">
                     {% if file.price > file.get_price_by_discount %}
